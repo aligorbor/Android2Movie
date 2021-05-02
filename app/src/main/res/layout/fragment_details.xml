@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/fragmentBackground"
+    tools:context=".view.DetailsFragment">
+
+    <LinearLayout
+        android:id="@+id/detailsView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/details_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:maxLines="2"
+            android:minLines="2"
+            android:text="@string/title"
+            android:textColor="@color/black"
+            android:textSize="@dimen/details_title_text_size"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/details_original_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:maxLines="1"
+            android:minLines="1"
+            android:text="@string/original_title"
+            android:textSize="@dimen/details_title1_text_size"
+            android:textStyle="italic" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:id="@+id/details_poster"
+                android:layout_width="@dimen/details_image_width"
+                android:layout_height="@dimen/details_image_height"
+                android:layout_gravity="start"
+                android:layout_marginStart="@dimen/details_marginStart"
+                android:scaleType="fitXY"
+                app:srcCompat="@drawable/poster"
+                android:contentDescription="@string/poster_description" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/details_genres"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/details_marginStart"
+                    android:padding="@dimen/details_padding"
+                    android:text="@string/genres" />
+
+                <TextView
+                    android:id="@+id/details_duration"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/details_marginStart"
+                    android:padding="@dimen/details_padding"
+                    android:text="@string/duration" />
+
+                <TextView
+                    android:id="@+id/details_vote_average"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/details_marginStart"
+                    android:padding="@dimen/details_padding"
+                    android:text="@string/rating" />
+
+                <TextView
+                    android:id="@+id/details_budget"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/details_marginStart"
+                    android:padding="@dimen/details_padding"
+                    android:text="@string/budget" />
+
+                <TextView
+                    android:id="@+id/details_revenue"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/details_marginStart"
+                    android:padding="@dimen/details_padding"
+                    android:text="@string/revenue" />
+
+                <TextView
+                    android:id="@+id/details_release_date"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/details_marginStart"
+                    android:padding="@dimen/details_padding"
+                    android:text="@string/release_date" />
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/details_overview"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/details_marginStart"
+            android:layout_marginTop="@dimen/details_marginStart"
+            android:padding="@dimen/details_padding"
+            android:text="@string/overview" />
+
+
+    </LinearLayout>
+
+    <FrameLayout
+        android:id="@+id/loadingLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/loadingBackground"
+        android:visibility="gone"
+        tools:visibility="gone">
+
+        <ProgressBar
+            style="?android:attr/progressBarStyleLarge"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center" />
+    </FrameLayout>
+</FrameLayout>
