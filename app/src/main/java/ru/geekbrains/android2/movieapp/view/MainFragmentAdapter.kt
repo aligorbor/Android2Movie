@@ -13,7 +13,7 @@ class MainFragmentAdapter(private var onItemViewClickListener: MainFragment.OnIt
 
     private var movieData: List<Movie> = listOf()
 
-    fun setWeather(data: List<Movie>) {
+    fun setMovie(data: List<Movie>) {
         movieData = data
         notifyDataSetChanged()
     }

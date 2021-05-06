@@ -39,9 +39,17 @@ class DetailsFragment : Fragment() {
         if (movie != null) {
             binding.detailsTitle.text = movie.title
             binding.detailsVoteAverage.text =
-                String.format(getString(R.string.rating), movie.vote_average)
+                String.format(getString(R.string.rating), movie.vote_average, movie.vote_count)
             binding.detailsReleaseDate.text =
                 String.format(getString(R.string.release_date), movie.release_date)
+            binding.detailsGenres.text = movie.genres
+            binding.detailsDuration.text =
+                String.format(getString(R.string.duration), movie.duration)
+            binding.detailsBudget.text = String.format(getString(R.string.budget), movie.budget)
+            binding.detailsRevenue.text = String.format(getString(R.string.revenue), movie.revenue)
+            binding.detailsOverview.text = movie.overview
+            binding.detailsOriginalTitle.text = movie.original_title
+
         }
     }
 

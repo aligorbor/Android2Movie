@@ -2,11 +2,11 @@ package ru.geekbrains.android2.movieapp.model
 
 class RepositoryImpl:Repository  {
 
-    override fun getMoviesNowPlayingFromLocalStorageRus(): List<Movie> {
-        return getRussianMoviesNowPlaying()
+    override fun getCategoriesFromLocalStorageRus(): List<Category> {
+        return getRussianCategories()
     }
 
-    override fun getMoviesNowPlayingFromLocalStorageWorld(): List<Movie> {
-        return getWorldMoviesNowPlaying()
+    override fun getCategoriesFromLocalStorageWorld(): List<Category> {
+        return getWorldCategories()
     }
 }

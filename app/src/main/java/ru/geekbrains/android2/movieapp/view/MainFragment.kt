@@ -10,6 +10,7 @@ import androidx.lifecycle.ViewModelProvider
 import com.google.android.material.snackbar.Snackbar
 import ru.geekbrains.android2.movieapp.R
 import ru.geekbrains.android2.movieapp.databinding.FragmentMainBinding
+import ru.geekbrains.android2.movieapp.model.Category
 import ru.geekbrains.android2.movieapp.model.Movie
 import ru.geekbrains.android2.movieapp.viewmodel.AppState
 import ru.geekbrains.android2.movieapp.viewmodel.MainViewModel
@@ -32,12 +33,18 @@ class MainFragment : Fragment() {
         }
     }
 
-    private val adapter = MainFragmentAdapter(onItemViewClickListener)
-    private val adapter1 = MainFragmentAdapter(onItemViewClickListener)
-    private val adapter2 = MainFragmentAdapter(onItemViewClickListener)
-    private val adapter3 = MainFragmentAdapter(onItemViewClickListener)
+    private val onCategoryClickListener = object : OnCategoryClickListener {
+        override fun onCategoryClick(category: Category) {
+            Toast.makeText(context, category.name, Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private val adapterCategory =
+        MainFragmentCategoryAdapter(onItemViewClickListener, onCategoryClickListener)
+
 
     private var isDataSetRus: Boolean = true
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -49,25 +56,22 @@ class MainFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding.mainFragmentRecyclerView.adapter = adapter
-        binding.mainFragmentRecyclerView1.adapter = adapter1
-        binding.mainFragmentRecyclerView2.adapter = adapter2
-        binding.mainFragmentRecyclerView3.adapter = adapter3
+        binding.mainFragmentCategoryRecyclerView.adapter = adapterCategory
 
-        binding.mainFragmentFAB.setOnClickListener { changeWeatherDataSet() }
+        binding.mainFragmentFAB.setOnClickListener { changeMovieDataSet() }
         viewModel = ViewModelProvider(this).get(MainViewModel::class.java)
         viewModel.getLiveData().observe(viewLifecycleOwner, Observer {
             renderData(it)
         })
-        viewModel.getMoviesFromLocalSourceRus()
+        viewModel.getCategoriesFromLocalSourceRus()
     }
 
-    private fun changeWeatherDataSet() {
+    private fun changeMovieDataSet() {
         if (isDataSetRus) {
-            viewModel.getMoviesFromLocalSourceWorld()
+            viewModel.getCategoriesFromLocalSourceWorld()
             binding.mainFragmentFAB.setImageResource(R.drawable.ic_earth)
         } else {
-            viewModel.getMoviesFromLocalSourceRus()
+            viewModel.getCategoriesFromLocalSourceRus()
             binding.mainFragmentFAB.setImageResource(R.drawable.ic_russia)
         }
         isDataSetRus = !isDataSetRus
@@ -77,10 +81,7 @@ class MainFragment : Fragment() {
         when (appState) {
             is AppState.Success -> {
                 binding.mainFragmentLoadingLayout.visibility = View.GONE
-                adapter.setWeather(appState.movieData)
-                adapter1.setWeather(appState.movieData)
-                adapter2.setWeather(appState.movieData)
-                adapter3.setWeather(appState.movieData)
+                adapterCategory.setCategory(appState.categoryData)
             }
             is AppState.Loading -> {
                 binding.mainFragmentLoadingLayout.visibility = View.VISIBLE
@@ -93,7 +94,10 @@ class MainFragment : Fragment() {
                         Snackbar.LENGTH_INDEFINITE
                     )
                     .setAction(getString(R.string.reload)) {
-                        viewModel.getMoviesFromLocalSourceRus()
+                        if (isDataSetRus)
+                            viewModel.getCategoriesFromLocalSourceWorld()
+                        else
+                            viewModel.getCategoriesFromLocalSourceRus()
                     }
                     .show()
             }
@@ -106,7 +110,7 @@ class MainFragment : Fragment() {
         val searchText = search.actionView as SearchView
         searchText.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
-                Toast.makeText(context,query,Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, query, Toast.LENGTH_SHORT).show()
                 return true
             }
 
@@ -119,6 +123,10 @@ class MainFragment : Fragment() {
 
     interface OnItemViewClickListener {
         fun onItemViewClick(movie: Movie)
+    }
+
+    interface OnCategoryClickListener {
+        fun onCategoryClick(category: Category)
     }
 
     companion object {

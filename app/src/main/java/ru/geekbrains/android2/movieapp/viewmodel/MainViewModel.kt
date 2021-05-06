@@ -12,10 +12,10 @@ class MainViewModel(
 
     fun getLiveData() = liveDataToObserve
 
-    fun getMoviesFromLocalSourceRus() = getDataFromLocalSource(isRussian = true)
-    fun getMoviesFromLocalSourceWorld() = getDataFromLocalSource(isRussian = false)
+    fun getCategoriesFromLocalSourceRus() = getDataFromLocalSource(isRussian = true)
+    fun getCategoriesFromLocalSourceWorld() = getDataFromLocalSource(isRussian = false)
 
-    fun getMoviesFromRemoteSource() = getDataFromLocalSource(isRussian = true)
+    fun getCategoriesFromRemoteSource() = getDataFromLocalSource(isRussian = true)
 
     private fun getDataFromLocalSource(isRussian: Boolean) {
         liveDataToObserve.value = AppState.Loading
@@ -24,8 +24,8 @@ class MainViewModel(
             liveDataToObserve.postValue(
                 AppState.Success(
                     if (isRussian)
-                        repositoryImpl.getMoviesNowPlayingFromLocalStorageRus() else
-                        repositoryImpl.getMoviesNowPlayingFromLocalStorageWorld()
+                        repositoryImpl.getCategoriesFromLocalStorageRus() else
+                        repositoryImpl.getCategoriesFromLocalStorageWorld()
                 )
             )
             //       liveDataToObserve.postValue(AppState.Error(Throwable("Test error")))
