@@ -38,13 +38,17 @@ class MainFragmentCategoryAdapter(
 
     inner class MainViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         fun bind(category: Category) {
-            val categotyName: TextView = itemView.findViewById<TextView>(R.id.textCategory)
-            categotyName.text = category.name
-            val adapter = MainFragmentAdapter(onItemViewClickListener)
-            itemView.findViewById<RecyclerView>(R.id.mainFragmentRecyclerView).adapter = adapter
-            adapter.setMovie(category.movies)
-            categotyName.setOnClickListener {
-                onCategoryClickListener?.onCategoryClick(category)
+            itemView.apply {
+                findViewById<TextView>(R.id.textCategory).apply {
+                    text = category.name
+                    setOnClickListener {
+                        onCategoryClickListener?.onCategoryClick(category)
+                    }
+                }
+                findViewById<RecyclerView>(R.id.mainFragmentRecyclerView).adapter =
+                    MainFragmentAdapter(onItemViewClickListener).also {
+                        it.setMovie(category.movies)
+                    }
             }
         }
     }

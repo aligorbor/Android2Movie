@@ -13,7 +13,7 @@ class MainActivity : AppCompatActivity() {
         val view = binding.getRoot()
         setContentView(view)
         initToolBar()
-        if (savedInstanceState == null) {
+        savedInstanceState ?: run {
             supportFragmentManager.beginTransaction()
                 .replace(R.id.container, MainFragment.newInstance())
                 .commitNow()

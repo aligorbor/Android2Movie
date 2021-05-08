@@ -35,21 +35,23 @@ class DetailsFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val movie = arguments?.getParcelable<Movie>(BUNDLE_EXTRA)
-        if (movie != null) {
-            binding.detailsTitle.text = movie.title
-            binding.detailsVoteAverage.text =
-                String.format(getString(R.string.rating), movie.vote_average, movie.vote_count)
-            binding.detailsReleaseDate.text =
-                String.format(getString(R.string.release_date), movie.release_date)
-            binding.detailsGenres.text = movie.genres
-            binding.detailsDuration.text =
-                String.format(getString(R.string.duration), movie.duration)
-            binding.detailsBudget.text = String.format(getString(R.string.budget), movie.budget)
-            binding.detailsRevenue.text = String.format(getString(R.string.revenue), movie.revenue)
-            binding.detailsOverview.text = movie.overview
-            binding.detailsOriginalTitle.text = movie.original_title
-
+        arguments?.getParcelable<Movie>(BUNDLE_EXTRA)?.let { movie->
+            with(movie){
+                with(binding){
+                    detailsTitle.text = title
+                    detailsVoteAverage.text =
+                        String.format(getString(R.string.rating), vote_average, vote_count)
+                    detailsReleaseDate.text =
+                        String.format(getString(R.string.release_date), release_date)
+                    detailsGenres.text = genres
+                    detailsDuration.text =
+                        String.format(getString(R.string.duration), duration)
+                    detailsBudget.text = String.format(getString(R.string.budget), budget)
+                    detailsRevenue.text = String.format(getString(R.string.revenue), revenue)
+                    detailsOverview.text = overview
+                    detailsOriginalTitle.text = original_title
+                }
+            }
         }
     }
 

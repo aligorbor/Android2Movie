@@ -1,12 +1,8 @@
 package ru.geekbrains.android2.movieapp.model
 
-class RepositoryImpl:Repository  {
+class RepositoryImpl : Repository {
 
-    override fun getCategoriesFromLocalStorageRus(): List<Category> {
-        return getRussianCategories()
-    }
+    override fun getCategoriesFromLocalStorageRus() = getRussianCategories()
 
-    override fun getCategoriesFromLocalStorageWorld(): List<Category> {
-        return getWorldCategories()
-    }
+    override fun getCategoriesFromLocalStorageWorld() = getWorldCategories()
 }

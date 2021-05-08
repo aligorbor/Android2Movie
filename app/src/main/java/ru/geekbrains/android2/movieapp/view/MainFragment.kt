@@ -21,12 +21,11 @@ class MainFragment : Fragment() {
     private lateinit var viewModel: MainViewModel
     private val onItemViewClickListener = object : OnItemViewClickListener {
         override fun onItemViewClick(movie: Movie) {
-            val manager = activity?.supportFragmentManager
-            if (manager != null) {
-                val bundle = Bundle()
-                bundle.putParcelable(DetailsFragment.BUNDLE_EXTRA, movie)
-                manager.beginTransaction()
-                    .add(R.id.container, DetailsFragment.newInstance(bundle))
+            activity?.supportFragmentManager?.apply {
+                beginTransaction()
+                    .add(R.id.container, DetailsFragment.newInstance(Bundle().apply {
+                        putParcelable(DetailsFragment.BUNDLE_EXTRA, movie)
+                    }))
                     .addToBackStack("")
                     .commitAllowingStateLoss()
             }
@@ -57,13 +56,13 @@ class MainFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.mainFragmentCategoryRecyclerView.adapter = adapterCategory
-
         binding.mainFragmentFAB.setOnClickListener { changeMovieDataSet() }
-        viewModel = ViewModelProvider(this).get(MainViewModel::class.java)
-        viewModel.getLiveData().observe(viewLifecycleOwner, Observer {
-            renderData(it)
-        })
-        viewModel.getCategoriesFromLocalSourceRus()
+        viewModel = ViewModelProvider(this).get(MainViewModel::class.java).apply {
+            getLiveData().observe(viewLifecycleOwner, {
+                renderData(it)
+            })
+            getCategoriesFromLocalSourceRus()
+        }
     }
 
     private fun changeMovieDataSet() {
@@ -73,33 +72,35 @@ class MainFragment : Fragment() {
         } else {
             viewModel.getCategoriesFromLocalSourceRus()
             binding.mainFragmentFAB.setImageResource(R.drawable.ic_russia)
+        }.also {
+            isDataSetRus = !isDataSetRus
         }
-        isDataSetRus = !isDataSetRus
     }
 
-    private fun renderData(appState: AppState) {
+    private fun renderData(appState: AppState) = with(binding) {
         when (appState) {
             is AppState.Success -> {
-                binding.mainFragmentLoadingLayout.visibility = View.GONE
+                mainFragmentLoadingLayout.visibility = View.GONE
                 adapterCategory.setCategory(appState.categoryData)
             }
             is AppState.Loading -> {
-                binding.mainFragmentLoadingLayout.visibility = View.VISIBLE
+                mainFragmentLoadingLayout.visibility = View.VISIBLE
             }
             is AppState.Error -> {
-                binding.mainFragmentLoadingLayout.visibility = View.GONE
-                Snackbar
-                    .make(
-                        binding.mainFragmentFAB, getString(R.string.error),
-                        Snackbar.LENGTH_INDEFINITE
-                    )
-                    .setAction(getString(R.string.reload)) {
+                mainFragmentLoadingLayout.visibility = View.GONE
+                mainFragmentRootView.showSnackBar(
+                    R.string.error,
+                    R.string.reload,
+                    {
                         if (isDataSetRus)
                             viewModel.getCategoriesFromLocalSourceWorld()
                         else
                             viewModel.getCategoriesFromLocalSourceRus()
-                    }
-                    .show()
+                    })
+                //проверяем:
+                //       mainFragmentRootView.showSnackBar( "Hello, SnackBar!")
+                //       mainFragmentRootView.showSnackBar( R.string.error)
+
             }
         }
     }
@@ -118,7 +119,6 @@ class MainFragment : Fragment() {
                 return true
             }
         })
-        //     super.onCreateOptionsMenu(menu, inflater)
     }
 
     interface OnItemViewClickListener {
@@ -133,4 +133,38 @@ class MainFragment : Fragment() {
         fun newInstance() =
             MainFragment()
     }
+
+    private fun View.showSnackBar(
+        text: String,
+        actionText: String,
+        action: (View) -> Unit,
+        length: Int = Snackbar.LENGTH_INDEFINITE
+    ) {
+        Snackbar.make(this, text, length).setAction(actionText, action).show()
+    }
+
+    private fun View.showSnackBar(
+        resIdText: Int,
+        resIdActionText: Int,
+        action: (View) -> Unit,
+        length: Int = Snackbar.LENGTH_INDEFINITE
+    ) {
+        Snackbar.make(this, getString(resIdText), length)
+            .setAction(getString(resIdActionText), action).show()
+    }
+
+    private fun View.showSnackBar(
+        text: String,
+        length: Int = Snackbar.LENGTH_INDEFINITE
+    ) {
+        Snackbar.make(this, text, length).show()
+    }
+
+    private fun View.showSnackBar(
+        resIdText: Int,
+        length: Int = Snackbar.LENGTH_INDEFINITE
+    ) {
+        Snackbar.make(this, getString(resIdText), length).show()
+    }
+
 }
