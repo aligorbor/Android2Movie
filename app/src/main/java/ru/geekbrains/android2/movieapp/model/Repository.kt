@@ -1,6 +1,6 @@
 package ru.geekbrains.android2.movieapp.model
 
 interface Repository {
-    fun getCategoriesFromLocalStorageRus(): List<Category>
-    fun getCategoriesFromLocalStorageWorld(): List<Category>
+    fun getCategoriesFromRemoteStorage(isRus: Boolean): List<Category>
+    fun getMovieDetailFromRemoteStorage(movie: Movie): Movie
 }

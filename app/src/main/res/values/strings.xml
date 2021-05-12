@@ -1,8 +1,8 @@
 <resources>
     <string name="app_name">MovieApp</string>
     <string name="choose_russia_world">Choose Russia/World</string>
-    <string name="error">Error</string>
     <string name="reload">Reload</string>
+    <string name="error">Error</string>
     <string name="title">Title</string>
     <string name="original_title">Original Title</string>
     <string name="genres">Genres</string>

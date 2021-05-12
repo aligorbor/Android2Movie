@@ -12,6 +12,7 @@ import ru.geekbrains.android2.movieapp.R
 import ru.geekbrains.android2.movieapp.databinding.FragmentMainBinding
 import ru.geekbrains.android2.movieapp.model.Category
 import ru.geekbrains.android2.movieapp.model.Movie
+import ru.geekbrains.android2.movieapp.utils.showSnackBar
 import ru.geekbrains.android2.movieapp.viewmodel.AppState
 import ru.geekbrains.android2.movieapp.viewmodel.MainViewModel
 
@@ -24,6 +25,7 @@ class MainFragment : Fragment() {
             activity?.supportFragmentManager?.apply {
                 beginTransaction()
                     .add(R.id.container, DetailsFragment.newInstance(Bundle().apply {
+                        movie.isRus = isDataSetRus
                         putParcelable(DetailsFragment.BUNDLE_EXTRA, movie)
                     }))
                     .addToBackStack("")
@@ -50,7 +52,7 @@ class MainFragment : Fragment() {
     ): View {
         _binding = FragmentMainBinding.inflate(inflater, container, false)
         setHasOptionsMenu(true)
-        return binding.getRoot()
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -61,19 +63,18 @@ class MainFragment : Fragment() {
             getLiveData().observe(viewLifecycleOwner, {
                 renderData(it)
             })
-            getCategoriesFromLocalSourceRus()
+            getCategoriesFromRemoteSource(isDataSetRus)
         }
     }
 
     private fun changeMovieDataSet() {
         if (isDataSetRus) {
-            viewModel.getCategoriesFromLocalSourceWorld()
             binding.mainFragmentFAB.setImageResource(R.drawable.ic_earth)
         } else {
-            viewModel.getCategoriesFromLocalSourceRus()
             binding.mainFragmentFAB.setImageResource(R.drawable.ic_russia)
         }.also {
             isDataSetRus = !isDataSetRus
+            viewModel.getCategoriesFromRemoteSource(isDataSetRus)
         }
     }
 
@@ -89,18 +90,11 @@ class MainFragment : Fragment() {
             is AppState.Error -> {
                 mainFragmentLoadingLayout.visibility = View.GONE
                 mainFragmentRootView.showSnackBar(
-                    R.string.error,
-                    R.string.reload,
+                    appState.error.message ?: "",
+                    "Reload",
                     {
-                        if (isDataSetRus)
-                            viewModel.getCategoriesFromLocalSourceWorld()
-                        else
-                            viewModel.getCategoriesFromLocalSourceRus()
+                        viewModel.getCategoriesFromRemoteSource(isDataSetRus)
                     })
-                //проверяем:
-                //       mainFragmentRootView.showSnackBar( "Hello, SnackBar!")
-                //       mainFragmentRootView.showSnackBar( R.string.error)
-
             }
         }
     }
@@ -133,38 +127,4 @@ class MainFragment : Fragment() {
         fun newInstance() =
             MainFragment()
     }
-
-    private fun View.showSnackBar(
-        text: String,
-        actionText: String,
-        action: (View) -> Unit,
-        length: Int = Snackbar.LENGTH_INDEFINITE
-    ) {
-        Snackbar.make(this, text, length).setAction(actionText, action).show()
-    }
-
-    private fun View.showSnackBar(
-        resIdText: Int,
-        resIdActionText: Int,
-        action: (View) -> Unit,
-        length: Int = Snackbar.LENGTH_INDEFINITE
-    ) {
-        Snackbar.make(this, getString(resIdText), length)
-            .setAction(getString(resIdActionText), action).show()
-    }
-
-    private fun View.showSnackBar(
-        text: String,
-        length: Int = Snackbar.LENGTH_INDEFINITE
-    ) {
-        Snackbar.make(this, text, length).show()
-    }
-
-    private fun View.showSnackBar(
-        resIdText: Int,
-        length: Int = Snackbar.LENGTH_INDEFINITE
-    ) {
-        Snackbar.make(this, getString(resIdText), length).show()
-    }
-
 }
