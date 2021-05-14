@@ -4,6 +4,7 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 import com.google.gson.Gson
 import ru.geekbrains.android2.movieapp.BuildConfig
+import ru.geekbrains.android2.movieapp.interactors.StringsInteractor
 import ru.geekbrains.android2.movieapp.model.entities.CategoryDTO
 import ru.geekbrains.android2.movieapp.model.entities.MovieDetailDTO
 import java.io.BufferedReader
@@ -27,21 +28,27 @@ const val paramLanguageEN = "en-US"
 
 object MoviesLoader {
 
-    fun loadCategories(isRus: Boolean): List<Category> {
+    fun loadCategories(isRus: Boolean, interactor: StringsInteractor): List<Category> {
         val page = 1
         val lang = if (isRus) paramLanguageRU
         else paramLanguageEN
         return listOf(
             Category(
-                name = "Now Playing",
+                name = interactor.strNowPlaying,
                 movies = toMovies(loadEntity(endPointNowPlaying, lang, page))
             ),
-            Category(name = "Popular", movies = toMovies(loadEntity(endPointPopular, lang, page))),
             Category(
-                name = "Top Rated",
+                name = interactor.strPopular,
+                movies = toMovies(loadEntity(endPointPopular, lang, page))
+            ),
+            Category(
+                name = interactor.strTopRated,
                 movies = toMovies(loadEntity(endPointTopRated, lang, page))
             ),
-            Category(name = "Upcoming", movies = toMovies(loadEntity(endPointUpComing, lang, page)))
+            Category(
+                name = interactor.strUpcoming,
+                movies = toMovies(loadEntity(endPointUpComing, lang, page))
+            )
         )
     }
 

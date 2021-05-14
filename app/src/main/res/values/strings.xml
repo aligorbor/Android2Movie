@@ -17,4 +17,12 @@
     <string name="item2">Item2</string>
     <string name="poster_description">Poster</string>
     <string name="star_description">Star</string>
+    <string name="network_unavailable">NETWORK UNAVAILABLE</string>
+    <string name="connected_wifi">CONNECTED WIFI</string>
+    <string name="connected_cellular">CONNECTED CELLULAR</string>
+    <string name="now_playing">Now Playing</string>
+    <string name="popular">Popular</string>
+    <string name="top_rated">Top Rated</string>
+    <string name="upcoming">Upcoming</string>
+
 </resources>

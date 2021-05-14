@@ -1,13 +1,20 @@
 package ru.geekbrains.android2.movieapp.view
 
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.ViewModelProvider
+import androidx.localbroadcastmanager.content.LocalBroadcastManager
+import ru.geekbrains.android2.movieapp.R
 import ru.geekbrains.android2.movieapp.databinding.FragmentDetailsBinding
 import ru.geekbrains.android2.movieapp.model.Movie
+import ru.geekbrains.android2.movieapp.services.*
 import ru.geekbrains.android2.movieapp.utils.showSnackBar
 import ru.geekbrains.android2.movieapp.viewmodel.AppStateDetails
 import ru.geekbrains.android2.movieapp.viewmodel.DetailsViewModel
@@ -28,6 +35,22 @@ class DetailsFragment : Fragment() {
 
     private lateinit var viewModel: DetailsViewModel
 
+    private val loadResultsReceiver: BroadcastReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context?, intent: Intent) {
+            when (intent.getBooleanExtra(INTENT_SERVICE_DATA, false)) {
+                true -> fillViews(intent.getParcelableExtra(DETAILS_MOVIE_OUT_EXTRA) ?: Movie())
+                else -> {
+                    binding.detailsFragmentRootView.showSnackBar(
+                        intent.getStringExtra(DETAILS_ERROR_OUT_EXTRA) ?: "",
+                        getString(R.string.reload),
+                        {
+                            getMovieDetailFromRemoteSourceService(movie)
+                        })
+                }
+            }
+        }
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -46,8 +69,15 @@ class DetailsFragment : Fragment() {
             getLiveData().observe(viewLifecycleOwner, {
                 renderData(it)
             })
-            getMovieDetailFromRemoteSource(movie)
+            //         getMovieDetailFromRemoteSource(movie)
         }
+        getMovieDetailFromRemoteSourceService(movie)
+    }
+
+    fun getMovieDetailFromRemoteSourceService(movie: Movie) {
+        val intent = Intent(requireContext(), ServiceMovieDetails::class.java)
+        intent.putExtra(DETAILS_MOVIE_IN_EXTRA, movie)
+        ServiceMovieDetails.start(requireContext(), intent)
     }
 
     private fun renderData(appState: AppStateDetails) = with(binding) {
@@ -63,7 +93,7 @@ class DetailsFragment : Fragment() {
                 detailsFragmentLoadingLayout.visibility = View.GONE
                 detailsFragmentRootView.showSnackBar(
                     appState.error.message ?: "",
-                    "Reload",
+                    getString(R.string.reload),
                     {
                         viewModel.getMovieDetailFromRemoteSource(movie)
                     })
@@ -77,33 +107,45 @@ class DetailsFragment : Fragment() {
                 detailsTitle.text = title
                 detailsVoteAverage.text =
                     String.format(
-                        getString(ru.geekbrains.android2.movieapp.R.string.rating),
+                        getString(R.string.rating),
                         vote_average,
                         vote_count
                     )
                 detailsReleaseDate.text =
                     String.format(
-                        getString(ru.geekbrains.android2.movieapp.R.string.release_date),
+                        getString(R.string.release_date),
                         release_date
                     )
                 detailsGenres.text = genres
                 detailsDuration.text =
                     String.format(
-                        getString(ru.geekbrains.android2.movieapp.R.string.duration),
+                        getString(R.string.duration),
                         runtime
                     )
                 detailsBudget.text = String.format(
-                    getString(ru.geekbrains.android2.movieapp.R.string.budget),
+                    getString(R.string.budget),
                     budget
                 )
                 detailsRevenue.text = String.format(
-                    getString(ru.geekbrains.android2.movieapp.R.string.revenue),
+                    getString(R.string.revenue),
                     revenue
                 )
                 detailsOverview.text = overview
                 detailsOriginalTitle.text = original_title
             }
         }
+    }
+
+    override fun onStart() {
+        super.onStart()
+        LocalBroadcastManager.getInstance(requireContext())
+            .registerReceiver(loadResultsReceiver, IntentFilter(DETAILS_INTENT_FILTER))
+    }
+
+    override fun onStop() {
+        LocalBroadcastManager.getInstance(requireContext())
+            .unregisterReceiver(loadResultsReceiver)
+        super.onStop()
     }
 
     override fun onDestroy() {

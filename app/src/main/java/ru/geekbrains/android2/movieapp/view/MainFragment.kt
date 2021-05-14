@@ -7,9 +7,9 @@ import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import com.google.android.material.snackbar.Snackbar
 import ru.geekbrains.android2.movieapp.R
 import ru.geekbrains.android2.movieapp.databinding.FragmentMainBinding
+import ru.geekbrains.android2.movieapp.interactors.StringsInteractorImpl
 import ru.geekbrains.android2.movieapp.model.Category
 import ru.geekbrains.android2.movieapp.model.Movie
 import ru.geekbrains.android2.movieapp.utils.showSnackBar
@@ -63,7 +63,7 @@ class MainFragment : Fragment() {
             getLiveData().observe(viewLifecycleOwner, {
                 renderData(it)
             })
-            getCategoriesFromRemoteSource(isDataSetRus)
+            getCategoriesFromRemoteSource(isDataSetRus,StringsInteractorImpl(requireContext()))
         }
     }
 
@@ -74,7 +74,7 @@ class MainFragment : Fragment() {
             binding.mainFragmentFAB.setImageResource(R.drawable.ic_russia)
         }.also {
             isDataSetRus = !isDataSetRus
-            viewModel.getCategoriesFromRemoteSource(isDataSetRus)
+            viewModel.getCategoriesFromRemoteSource(isDataSetRus,StringsInteractorImpl(requireContext()))
         }
     }
 
@@ -93,7 +93,7 @@ class MainFragment : Fragment() {
                     appState.error.message ?: "",
                     "Reload",
                     {
-                        viewModel.getCategoriesFromRemoteSource(isDataSetRus)
+                        viewModel.getCategoriesFromRemoteSource(isDataSetRus,StringsInteractorImpl(requireContext()))
                     })
             }
         }

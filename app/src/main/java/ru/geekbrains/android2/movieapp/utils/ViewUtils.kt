@@ -18,20 +18,26 @@ fun View.showSnackBar(
     action: (View) -> Unit,
     length: Int = Snackbar.LENGTH_INDEFINITE
 ) {
-    Snackbar.make(this, this.context.getString(resIdText), length)
-        .setAction(this.context.getString(resIdActionText), action).show()
+    this.showSnackBar(
+        this.context.getString(resIdText),
+        this.context.getString(resIdActionText),
+        action,
+        length
+    )
 }
 
 fun View.showSnackBar(
     text: String,
+    actionText: String = "Ok",
     length: Int = Snackbar.LENGTH_INDEFINITE
 ) {
-    Snackbar.make(this, text, length).show()
+    this.showSnackBar(text, actionText, {}, length)
 }
 
 fun View.showSnackBar(
     resIdText: Int,
+    actionText: String = "Ok",
     length: Int = Snackbar.LENGTH_INDEFINITE
 ) {
-    Snackbar.make(this, this.context.getString(resIdText), length).show()
+    this.showSnackBar(this.context.getString(resIdText), actionText, {}, length)
 }
