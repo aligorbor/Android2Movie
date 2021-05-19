@@ -55,7 +55,7 @@
                     android:layout_marginStart="@dimen/details_marginStart"
                     android:contentDescription="@string/poster_description"
                     android:scaleType="fitXY"
-                    app:srcCompat="@drawable/poster" />
+                    tools:srcCompat="@drawable/poster" />
 
                 <LinearLayout
                     android:layout_width="match_parent"

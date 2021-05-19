@@ -36,7 +36,15 @@ class MainFragment : Fragment() {
 
     private val onCategoryClickListener = object : OnCategoryClickListener {
         override fun onCategoryClick(category: Category) {
-            Toast.makeText(context, category.name, Toast.LENGTH_SHORT).show()
+            activity?.supportFragmentManager?.apply {
+                beginTransaction()
+                    .add(R.id.container, CategoryFragment.newInstance(Bundle().apply {
+                        category.isRus = isDataSetRus
+                        putParcelable(CategoryFragment.BUNDLE_EXTRA, category)
+                    }))
+                    .addToBackStack("")
+                    .commitAllowingStateLoss()
+            }
         }
     }
 
@@ -63,7 +71,10 @@ class MainFragment : Fragment() {
             getLiveData().observe(viewLifecycleOwner, {
                 renderData(it)
             })
-            getCategoriesFromRemoteSource(isDataSetRus,StringsInteractorImpl(requireContext()))
+            getCategoriesFromRemoteSource(
+                isDataSetRus,
+                StringsInteractorImpl(requireContext())
+            )
         }
     }
 
@@ -74,7 +85,10 @@ class MainFragment : Fragment() {
             binding.mainFragmentFAB.setImageResource(R.drawable.ic_russia)
         }.also {
             isDataSetRus = !isDataSetRus
-            viewModel.getCategoriesFromRemoteSource(isDataSetRus,StringsInteractorImpl(requireContext()))
+            viewModel.getCategoriesFromRemoteSource(
+                isDataSetRus,
+                StringsInteractorImpl(requireContext())
+            )
         }
     }
 
@@ -93,7 +107,10 @@ class MainFragment : Fragment() {
                     appState.error.message ?: "",
                     "Reload",
                     {
-                        viewModel.getCategoriesFromRemoteSource(isDataSetRus,StringsInteractorImpl(requireContext()))
+                        viewModel.getCategoriesFromRemoteSource(
+                            isDataSetRus,
+                            StringsInteractorImpl(requireContext())
+                        )
                     })
             }
         }

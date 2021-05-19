@@ -9,8 +9,10 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import androidx.lifecycle.ViewModelProvider
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
+import com.squareup.picasso.Picasso
 import ru.geekbrains.android2.movieapp.R
 import ru.geekbrains.android2.movieapp.databinding.FragmentDetailsBinding
 import ru.geekbrains.android2.movieapp.model.Movie
@@ -69,9 +71,8 @@ class DetailsFragment : Fragment() {
             getLiveData().observe(viewLifecycleOwner, {
                 renderData(it)
             })
-            //         getMovieDetailFromRemoteSource(movie)
+            getMovieDetailFromRemoteSource(movie)
         }
-        getMovieDetailFromRemoteSourceService(movie)
     }
 
     fun getMovieDetailFromRemoteSourceService(movie: Movie) {
@@ -84,13 +85,16 @@ class DetailsFragment : Fragment() {
         when (appState) {
             is AppStateDetails.Success -> {
                 detailsFragmentLoadingLayout.visibility = View.GONE
+                detailsFragmentRootView.visibility = View.VISIBLE
                 fillViews(appState.movie)
             }
             is AppStateDetails.Loading -> {
                 detailsFragmentLoadingLayout.visibility = View.VISIBLE
+                detailsFragmentRootView.visibility = View.GONE
             }
             is AppStateDetails.Error -> {
                 detailsFragmentLoadingLayout.visibility = View.GONE
+                detailsFragmentRootView.visibility = View.VISIBLE
                 detailsFragmentRootView.showSnackBar(
                     appState.error.message ?: "",
                     getString(R.string.reload),
@@ -132,6 +136,10 @@ class DetailsFragment : Fragment() {
                 )
                 detailsOverview.text = overview
                 detailsOriginalTitle.text = original_title
+                Picasso
+                    .get()
+                    .load(poster_path)
+                    .into(detailsPoster)
             }
         }
     }

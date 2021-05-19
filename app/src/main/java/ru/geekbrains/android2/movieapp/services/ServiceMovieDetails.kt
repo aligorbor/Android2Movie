@@ -5,7 +5,7 @@ import android.content.Intent
 import androidx.core.app.JobIntentService
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import ru.geekbrains.android2.movieapp.model.Movie
-import ru.geekbrains.android2.movieapp.model.MoviesLoader
+import ru.geekbrains.android2.movieapp.model.url_connection.MoviesLoader
 
 class ServiceMovieDetails(name: String = "ServiceMovieDetails") : JobIntentService() {
     override fun onHandleWork(intent: Intent) {

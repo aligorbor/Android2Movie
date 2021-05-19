@@ -1,4 +1,4 @@
-package ru.geekbrains.android2.movieapp.model.entities
+package ru.geekbrains.android2.movieapp.model.url_connection.entities
 
 data class CategoryDTO(
     val page: Int?,

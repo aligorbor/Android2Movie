@@ -10,8 +10,8 @@ import com.squareup.picasso.Picasso
 import ru.geekbrains.android2.movieapp.R
 import ru.geekbrains.android2.movieapp.model.Movie
 
-class MainFragmentAdapter(private var onItemViewClickListener: MainFragment.OnItemViewClickListener) :
-    RecyclerView.Adapter<MainFragmentAdapter.MainViewHolder>() {
+class CategoryFragmentAdapter(private var onItemViewClickListener: CategoryFragment.OnItemViewClickListener) :
+    RecyclerView.Adapter<CategoryFragmentAdapter.MainViewHolder>() {
 
     private var movieData: List<Movie> = listOf()
 
@@ -23,7 +23,7 @@ class MainFragmentAdapter(private var onItemViewClickListener: MainFragment.OnIt
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MainViewHolder {
         return MainViewHolder(
             LayoutInflater.from(parent.context)
-                .inflate(R.layout.fragment_main_recycler_item, parent, false)
+                .inflate(R.layout.fragment_category_recycler_item, parent, false)
         )
     }
 
@@ -39,9 +39,9 @@ class MainFragmentAdapter(private var onItemViewClickListener: MainFragment.OnIt
         fun bind(movie: Movie) {
             itemView.apply {
                 with(movie) {
-                    findViewById<TextView>(R.id.item_title).text = title
-                    findViewById<TextView>(R.id.item_release_date).text = release_date
-                    findViewById<TextView>(R.id.item_vote_average).text =
+                    findViewById<TextView>(R.id.item_title_category).text = title
+                    findViewById<TextView>(R.id.item_release_date_category).text = release_date
+                    findViewById<TextView>(R.id.item_vote_average_category).text =
                         vote_average.toString()
                     setOnClickListener {
                         onItemViewClickListener?.onItemViewClick(movie)
@@ -49,7 +49,7 @@ class MainFragmentAdapter(private var onItemViewClickListener: MainFragment.OnIt
                     Picasso
                         .get()
                         .load(poster_path)
-                        .into(findViewById<ImageView>(R.id.poster))
+                        .into(findViewById<ImageView>(R.id.poster_category))
                 }
             }
         }

@@ -1,12 +1,14 @@
-package ru.geekbrains.android2.movieapp.model
+package ru.geekbrains.android2.movieapp.model.url_connection
 
 import android.os.Build
 import androidx.annotation.RequiresApi
 import com.google.gson.Gson
 import ru.geekbrains.android2.movieapp.BuildConfig
 import ru.geekbrains.android2.movieapp.interactors.StringsInteractor
-import ru.geekbrains.android2.movieapp.model.entities.CategoryDTO
-import ru.geekbrains.android2.movieapp.model.entities.MovieDetailDTO
+import ru.geekbrains.android2.movieapp.model.Category
+import ru.geekbrains.android2.movieapp.model.Movie
+import ru.geekbrains.android2.movieapp.model.url_connection.entities.CategoryDTO
+import ru.geekbrains.android2.movieapp.model.url_connection.entities.MovieDetailDTO
 import java.io.BufferedReader
 import java.io.InputStreamReader
 import java.net.MalformedURLException
@@ -16,6 +18,9 @@ import javax.net.ssl.HttpsURLConnection
 
 const val readTimeout = 10000
 const val mainLink = "https://api.themoviedb.org"
+const val imageLink = "https://image.tmdb.org"
+const val endPointImage = "/t/p/w200"
+const val ImageNotFound = "/kqjL17yufvn9OVLyXYpvtyrFfak.jpg"
 const val endPointNowPlaying = "/3/movie/now_playing"
 const val endPointTopRated = "/3/movie/top_rated"
 const val endPointUpComing = "/3/movie/upcoming"
@@ -28,26 +33,30 @@ const val paramLanguageEN = "en-US"
 
 object MoviesLoader {
 
-    fun loadCategories(isRus: Boolean, interactor: StringsInteractor): List<Category> {
+    fun loadCategories(isRus: Boolean, interactor: StringsInteractor): MutableList<Category> {
         val page = 1
         val lang = if (isRus) paramLanguageRU
         else paramLanguageEN
-        return listOf(
+        return mutableListOf(
             Category(
                 name = interactor.strNowPlaying,
-                movies = toMovies(loadEntity(endPointNowPlaying, lang, page))
+                movies = toMovies(loadEntity(endPointNowPlaying, lang, page)),
+                id = 0
             ),
             Category(
                 name = interactor.strPopular,
-                movies = toMovies(loadEntity(endPointPopular, lang, page))
+                movies = toMovies(loadEntity(endPointPopular, lang, page)),
+                id = 1
             ),
             Category(
                 name = interactor.strTopRated,
-                movies = toMovies(loadEntity(endPointTopRated, lang, page))
+                movies = toMovies(loadEntity(endPointTopRated, lang, page)),
+                id = 2
             ),
             Category(
                 name = interactor.strUpcoming,
-                movies = toMovies(loadEntity(endPointUpComing, lang, page))
+                movies = toMovies(loadEntity(endPointUpComing, lang, page)),
+                id = 3
             )
         )
     }
@@ -106,7 +115,7 @@ object MoviesLoader {
         return reader.lines().collect(Collectors.joining("\n"))
     }
 
-    private fun toMovies(categoryDTO: CategoryDTO?): List<Movie> {
+    private fun toMovies(categoryDTO: CategoryDTO?): MutableList<Movie> {
         val movies: MutableList<Movie> = mutableListOf()
         categoryDTO?.let {
             for (result in categoryDTO.results) {
@@ -119,7 +128,7 @@ object MoviesLoader {
                         original_title = result?.original_title ?: "",
                         overview = result?.overview ?: "",
                         popularity = result?.popularity ?: 0.0,
-                        poster_path = result?.poster_path ?: "",
+                        poster_path = "$imageLink$endPointImage${result?.poster_path ?: ImageNotFound}",
                         release_date = result?.release_date ?: "",
                         title = result?.title ?: "",
                         video = result?.video ?: false,
