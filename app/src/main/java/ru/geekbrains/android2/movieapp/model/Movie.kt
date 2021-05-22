@@ -13,8 +13,8 @@ data class Movie(
     val id: Int = 0,
     val imdb_id: Int = 0,
     val original_language: String = "",
-    val original_title: String = "",
-    val overview: String = "",
+    var original_title: String = "",
+    var overview: String = "",
     val popularity: Double = 0.0,
     val poster_path: String = "",
     val release_date: String = "",
@@ -22,10 +22,12 @@ data class Movie(
     val title: String = "",
     val video: Boolean = false,
     val vote_average: Double = 0.0,
-    val vote_count: Int = 0,
+    var vote_count: Int = 0,
     var runtime: Int = 0,
     var revenue: Long = 0,
-    var isRus: Boolean = false
+    var isRus: Boolean = false,
+    var note: String = "",
+    var isFavorite: Boolean = false
 ) : Parcelable
 
 

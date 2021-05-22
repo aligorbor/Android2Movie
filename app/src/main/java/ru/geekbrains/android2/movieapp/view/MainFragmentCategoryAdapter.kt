@@ -7,10 +7,12 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import ru.geekbrains.android2.movieapp.R
 import ru.geekbrains.android2.movieapp.model.Category
+import ru.geekbrains.android2.movieapp.model.Movie
 
 class MainFragmentCategoryAdapter(
     private var onItemViewClickListener: MainFragment.OnItemViewClickListener,
-    private var onCategoryClickListener: MainFragment.OnCategoryClickListener
+    private var onCategoryClickListener: MainFragment.OnCategoryClickListener,
+    private var setFavoriteToMovie: MainFragment.SetFavoriteToMovie
 ) :
     RecyclerView.Adapter<MainFragmentCategoryAdapter.MainViewHolder>() {
 
@@ -46,10 +48,27 @@ class MainFragmentCategoryAdapter(
                     }
                 }
                 findViewById<RecyclerView>(R.id.mainFragmentRecyclerView).adapter =
-                    MainFragmentAdapter(onItemViewClickListener).also {
-                        it.setMovie(category.movies)
-                    }
+                    MainFragmentAdapter(onItemViewClickListener, setFavoriteToMovie, setSameMovies)
+                        .also {
+                            it.setMovie(category.movies)
+                        }
             }
         }
+    }
+
+    private val setSameMovies = object : SetSameMovies {
+        override fun setSameMoviesFavorite(movieToSet: Movie) {
+            for (category in catgoryData) {
+                for (movie in category.movies) {
+                    if (movie.id == movieToSet.id)
+                        movie.isFavorite = movieToSet.isFavorite
+                }
+            }
+            notifyDataSetChanged()
+        }
+    }
+
+    interface SetSameMovies {
+        fun setSameMoviesFavorite(movieToSet: Movie)
     }
 }

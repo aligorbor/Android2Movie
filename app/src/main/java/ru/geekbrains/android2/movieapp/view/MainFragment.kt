@@ -1,5 +1,6 @@
 package ru.geekbrains.android2.movieapp.view
 
+import android.content.Context
 import android.os.Bundle
 import android.view.*
 import android.widget.Toast
@@ -22,37 +23,42 @@ class MainFragment : Fragment() {
     private lateinit var viewModel: MainViewModel
     private val onItemViewClickListener = object : OnItemViewClickListener {
         override fun onItemViewClick(movie: Movie) {
-            activity?.supportFragmentManager?.apply {
-                beginTransaction()
-                    .add(R.id.container, DetailsFragment.newInstance(Bundle().apply {
-                        movie.isRus = isDataSetRus
-                        putParcelable(DetailsFragment.BUNDLE_EXTRA, movie)
-                    }))
-                    .addToBackStack("")
-                    .commitAllowingStateLoss()
-            }
+            openFragment(DetailsFragment.newInstance(Bundle().apply {
+                movie.isRus = isDataSetRus
+                putParcelable(DetailsFragment.BUNDLE_EXTRA, movie)
+            }))
         }
     }
 
     private val onCategoryClickListener = object : OnCategoryClickListener {
         override fun onCategoryClick(category: Category) {
-            activity?.supportFragmentManager?.apply {
-                beginTransaction()
-                    .add(R.id.container, CategoryFragment.newInstance(Bundle().apply {
-                        category.isRus = isDataSetRus
-                        putParcelable(CategoryFragment.BUNDLE_EXTRA, category)
-                    }))
-                    .addToBackStack("")
-                    .commitAllowingStateLoss()
+            openFragment(CategoryFragment.newInstance(Bundle().apply {
+                category.isRus = isDataSetRus
+                putParcelable(CategoryFragment.BUNDLE_EXTRA, category)
+            }))
+        }
+    }
+
+    private val setFavoriteToMovie = object : SetFavoriteToMovie {
+        override fun setFavorite(movie: Movie) {
+            if (movie.isFavorite) {
+                viewModel.saveMovieToFavorite(movie)
+            } else {
+                viewModel.deleteMovieFromFavorite(movie)
             }
         }
     }
 
     private val adapterCategory =
-        MainFragmentCategoryAdapter(onItemViewClickListener, onCategoryClickListener)
+        MainFragmentCategoryAdapter(
+            onItemViewClickListener,
+            onCategoryClickListener,
+            setFavoriteToMovie
+        )
 
 
     private var isDataSetRus: Boolean = true
+    private var adult: Boolean = false
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -71,6 +77,7 @@ class MainFragment : Fragment() {
             getLiveData().observe(viewLifecycleOwner, {
                 renderData(it)
             })
+            restorePreferences()
             getCategoriesFromRemoteSource(
                 isDataSetRus,
                 StringsInteractorImpl(requireContext())
@@ -98,6 +105,13 @@ class MainFragment : Fragment() {
                 mainFragmentLoadingLayout.visibility = View.GONE
                 adapterCategory.setCategory(appState.categoryData)
             }
+            is AppState.SuccessCategory -> {
+                mainFragmentLoadingLayout.visibility = View.GONE
+                openFragment(CategoryFragment.newInstance(Bundle().apply {
+                    putParcelable(CategoryFragment.BUNDLE_EXTRA,
+                        appState.category.apply { isRus = isDataSetRus })
+                }))
+            }
             is AppState.Loading -> {
                 mainFragmentLoadingLayout.visibility = View.VISIBLE
             }
@@ -118,6 +132,8 @@ class MainFragment : Fragment() {
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.main_fragment, menu)
+        val adultItem = menu.findItem(R.id.action_adult)
+        adultItem.isChecked = adult
         val search = menu.findItem(R.id.action_search)
         val searchText = search.actionView as SearchView
         searchText.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
@@ -132,6 +148,51 @@ class MainFragment : Fragment() {
         })
     }
 
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.action_history -> {
+                viewModel.getMoviesHistory()
+                true
+            }
+            R.id.action_favorite -> {
+                viewModel.getMoviesFavorite()
+                true
+            }
+            R.id.action_adult -> {
+                item.isChecked = !item.isChecked
+                adult = item.isChecked
+                savePreferences()
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
+    }
+
+    private fun openFragment(fragment: Fragment) {
+        activity?.supportFragmentManager?.apply {
+            beginTransaction()
+                .add(R.id.container, fragment)
+                .addToBackStack("")
+                .commitAllowingStateLoss()
+        }
+    }
+
+    private fun restorePreferences() {
+        activity?.let {
+            adult = it.getSharedPreferences(preferencesName, Context.MODE_PRIVATE)
+                .getBoolean(adultKey, false)
+        }
+    }
+
+    private fun savePreferences() {
+        activity?.let {
+            val preferences = it.getSharedPreferences(preferencesName, Context.MODE_PRIVATE)
+            val editor = preferences.edit()
+            editor.putBoolean(adultKey, adult)
+            editor.apply()
+        }
+    }
+
     interface OnItemViewClickListener {
         fun onItemViewClick(movie: Movie)
     }
@@ -140,7 +201,13 @@ class MainFragment : Fragment() {
         fun onCategoryClick(category: Category)
     }
 
+    interface SetFavoriteToMovie {
+        fun setFavorite(movie: Movie)
+    }
+
     companion object {
+        private const val adultKey = "adultKey"
+        private const val preferencesName = "MainPreferences"
         fun newInstance() =
             MainFragment()
     }

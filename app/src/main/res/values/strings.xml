@@ -13,8 +13,6 @@
     <string name="release_date">Release date: (%s)</string>
     <string name="overview">Overview</string>
     <string name="search">Search</string>
-    <string name="item1">Item1</string>
-    <string name="item2">Item2</string>
     <string name="poster_description">Poster</string>
     <string name="star_description">Star</string>
     <string name="network_unavailable">NETWORK UNAVAILABLE</string>
@@ -24,5 +22,9 @@
     <string name="popular">Popular</string>
     <string name="top_rated">Top Rated</string>
     <string name="upcoming">Upcoming</string>
+    <string name="history">History</string>
+    <string name="favorite">Favorite</string>
+    <string name="adult">Adult</string>
+    <string name="hint_text_note">Enter your notes here</string>
 
 </resources>

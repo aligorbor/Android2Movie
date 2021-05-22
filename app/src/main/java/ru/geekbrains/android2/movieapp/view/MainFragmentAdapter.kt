@@ -10,7 +10,11 @@ import com.squareup.picasso.Picasso
 import ru.geekbrains.android2.movieapp.R
 import ru.geekbrains.android2.movieapp.model.Movie
 
-class MainFragmentAdapter(private var onItemViewClickListener: MainFragment.OnItemViewClickListener) :
+class MainFragmentAdapter(
+    private var onItemViewClickListener: MainFragment.OnItemViewClickListener,
+    private var setFavoriteToMovie: MainFragment.SetFavoriteToMovie,
+    private var setSameMovies: MainFragmentCategoryAdapter.SetSameMovies
+) :
     RecyclerView.Adapter<MainFragmentAdapter.MainViewHolder>() {
 
     private var movieData: List<Movie> = listOf()
@@ -50,6 +54,22 @@ class MainFragmentAdapter(private var onItemViewClickListener: MainFragment.OnIt
                         .get()
                         .load(poster_path)
                         .into(findViewById<ImageView>(R.id.poster))
+
+                    val imageFavorite = findViewById<ImageView>(R.id.favorite)
+                    if (movie.isFavorite)
+                        imageFavorite.setImageResource(R.drawable.heart_red)
+                    else
+                        imageFavorite.setImageResource(R.drawable.heart_line)
+
+                    imageFavorite.setOnClickListener {
+                        movie.isFavorite = !movie.isFavorite
+                        if (movie.isFavorite)
+                            imageFavorite.setImageResource(R.drawable.heart_red)
+                        else
+                            imageFavorite.setImageResource(R.drawable.heart_line)
+                        setSameMovies.setSameMoviesFavorite(movie)
+                        setFavoriteToMovie.setFavorite(movie)
+                    }
                 }
             }
         }

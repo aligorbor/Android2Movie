@@ -143,6 +143,19 @@
                 android:padding="@dimen/details_padding"
                 android:text="@string/overview"
                 android:textSize="@dimen/details_text_size" />
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/height_divider"
+                android:layout_marginTop="@dimen/details_marginStart"
+                android:background="@color/colorAccent" />
+
+            <EditText
+                android:id="@+id/details_note"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="start|top"
+                android:inputType="textMultiLine"
+                android:hint="@string/hint_text_note"/>
 
         </LinearLayout>
 

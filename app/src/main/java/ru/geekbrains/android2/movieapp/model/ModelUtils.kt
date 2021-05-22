@@ -33,10 +33,15 @@ fun toMovies(categoryDTO: CategoryDTO?): MutableList<Movie> {
 }
 
 fun toMovieDetail(movie: Movie, movieDetailDTO: MovieDetailDTO?): Movie {
+    movie.original_title = movieDetailDTO?.original_title ?: ""
+    movie.overview = movieDetailDTO?.overview ?: ""
+    movie.vote_count = movieDetailDTO?.vote_count ?: 0
+
     movie.budget = movieDetailDTO?.budget ?: 0
     movie.revenue = movieDetailDTO?.revenue ?: 0
     movie.runtime = movieDetailDTO?.runtime ?: 0
     movieDetailDTO?.let {
+        movie.genres = ""
         for (genre in movieDetailDTO.genres) {
             movie.genres = "${movie.genres}${genre?.name} "
         }

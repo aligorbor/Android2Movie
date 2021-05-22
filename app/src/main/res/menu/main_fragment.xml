@@ -11,17 +11,27 @@
         app:showAsAction="ifRoom" />
 
     <item
-        android:id="@+id/action_item1"
-        android:icon="@android:drawable/ic_menu_add"
+        android:id="@+id/action_history"
+        android:icon="@drawable/ic_history_24"
         android:orderInCategory="20"
-        android:title="@string/item1"
-        app:showAsAction="never" />
+        android:title="@string/history"
+        app:showAsAction="ifRoom" />
 
     <item
-        android:id="@+id/action_item2"
-        android:icon="@android:drawable/ic_menu_view"
+        android:id="@+id/action_favorite"
+        android:icon="@android:drawable/ic_menu_gallery"
         android:orderInCategory="30"
-        android:title="@string/item2"
+        android:title="@string/favorite"
+        app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/action_adult"
+        app:actionViewClass="android.widget.CheckBox"
+        android:checkable="true"
+        android:checked="true"
+        android:icon="@android:drawable/ic_menu_view"
+        android:orderInCategory="40"
+        android:title="@string/adult"
         app:showAsAction="never" />
 
 </menu>

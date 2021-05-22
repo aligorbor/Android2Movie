@@ -136,6 +136,7 @@ class DetailsFragment : Fragment() {
                 )
                 detailsOverview.text = overview
                 detailsOriginalTitle.text = original_title
+                detailsNote.setText(movie.note)
                 Picasso
                     .get()
                     .load(poster_path)
@@ -148,6 +149,12 @@ class DetailsFragment : Fragment() {
         super.onStart()
         LocalBroadcastManager.getInstance(requireContext())
             .registerReceiver(loadResultsReceiver, IntentFilter(DETAILS_INTENT_FILTER))
+    }
+
+    override fun onPause() {
+        movie.note = binding.detailsNote.text.toString()
+        viewModel.saveMovieToHistory(movie)
+        super.onPause()
     }
 
     override fun onStop() {

@@ -2,13 +2,17 @@ package ru.geekbrains.android2.movieapp.viewmodel
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.launch
 import ru.geekbrains.android2.movieapp.model.Movie
 import ru.geekbrains.android2.movieapp.model.RepositoryImpl
 
 class DetailsViewModel(
     private val liveDataToObserve: MutableLiveData<AppStateDetails> = MutableLiveData(),
     private val repositoryImpl: RepositoryImpl = RepositoryImpl()
-) : ViewModel() {
+) : ViewModel(), CoroutineScope by MainScope() {
 
     fun getLiveData() = liveDataToObserve
 
@@ -16,16 +20,24 @@ class DetailsViewModel(
 
     private fun getDataFromRemoteSource(movie: Movie) {
         liveDataToObserve.value = AppStateDetails.Loading
-        Thread {
+        launch(Dispatchers.IO) {
             try {
                 liveDataToObserve.postValue(
                     AppStateDetails.Success(
-                        repositoryImpl.getMovieDetailFromRemoteStorage(movie)
+                        repositoryImpl.getMovieDetailFromRemoteStorage(movie).apply {
+                            note = repositoryImpl.getNote(movie.id)
+                        }
                     )
                 )
             } catch (e: Exception) {
                 liveDataToObserve.postValue(AppStateDetails.Error(e))
             }
-        }.start()
+        }
+    }
+
+    fun saveMovieToHistory(movie: Movie) {
+        launch(Dispatchers.IO) {
+            repositoryImpl.saveToHistory(movie)
+        }
     }
 }
