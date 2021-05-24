@@ -5,7 +5,8 @@ import ru.geekbrains.android2.movieapp.interactors.StringsInteractor
 interface Repository {
     fun getCategoriesFromRemoteStorage(
         isRus: Boolean,
-        interactor: StringsInteractor
+        interactor: StringsInteractor,
+        adult: Boolean
     ): List<Category>
 
     fun getMovieDetailFromRemoteStorage(movie: Movie): Movie

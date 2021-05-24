@@ -50,25 +50,26 @@ class MainFragmentCategoryAdapter(
                 findViewById<RecyclerView>(R.id.mainFragmentRecyclerView).adapter =
                     MainFragmentAdapter(onItemViewClickListener, setFavoriteToMovie, setSameMovies)
                         .also {
-                            it.setMovie(category.movies)
+                            it.setMovie(category)
                         }
             }
         }
     }
 
     private val setSameMovies = object : SetSameMovies {
-        override fun setSameMoviesFavorite(movieToSet: Movie) {
+        override fun setSameMoviesFavorite(movieToSet: Movie, catgoryID: Int) {
             for (category in catgoryData) {
                 for (movie in category.movies) {
-                    if (movie.id == movieToSet.id)
+                    if (movie.id == movieToSet.id && category.id != catgoryID) {
                         movie.isFavorite = movieToSet.isFavorite
+                        notifyItemChanged(category.id)
+                    }
                 }
             }
-            notifyDataSetChanged()
         }
     }
 
     interface SetSameMovies {
-        fun setSameMoviesFavorite(movieToSet: Movie)
+        fun setSameMoviesFavorite(movieToSet: Movie, catgoryID: Int)
     }
 }

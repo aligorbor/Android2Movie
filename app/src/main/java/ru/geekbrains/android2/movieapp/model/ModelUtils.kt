@@ -4,6 +4,8 @@ import ru.geekbrains.android2.movieapp.model.rest.ImageNotFound
 import ru.geekbrains.android2.movieapp.model.rest.endPointImage
 import ru.geekbrains.android2.movieapp.model.rest.imageLink
 import ru.geekbrains.android2.movieapp.model.rest.rest_entities.CategoryDTO
+import ru.geekbrains.android2.movieapp.model.rest.rest_entities.GenreDTO
+import ru.geekbrains.android2.movieapp.model.rest.rest_entities.GenresDTO
 import ru.geekbrains.android2.movieapp.model.rest.rest_entities.MovieDetailDTO
 
 fun toMovies(categoryDTO: CategoryDTO?): MutableList<Movie> {
@@ -47,4 +49,19 @@ fun toMovieDetail(movie: Movie, movieDetailDTO: MovieDetailDTO?): Movie {
         }
     }
     return movie
+}
+
+fun toGenres(genresDTO: GenresDTO?): MutableList<Genre> {
+    val listOfGenres = mutableListOf<Genre>()
+    genresDTO?.let {
+        for (genre in genresDTO.genres) {
+            listOfGenres.add(
+                Genre(
+                    id = genre?.id ?: 0,
+                    name = genre?.name ?: ""
+                )
+            )
+        }
+    }
+    return listOfGenres
 }

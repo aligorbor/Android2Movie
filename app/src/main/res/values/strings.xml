@@ -26,5 +26,9 @@
     <string name="favorite">Favorite</string>
     <string name="adult">Adult</string>
     <string name="hint_text_note">Enter your notes here</string>
+    <string name="contacts">Contacts</string>
+    <string name="contacts_alert_title">Доступ к контактам</string>
+    <string name="contacts_alert_message">Экран останется пустым, потому что доступ к контактам не предоставлен</string>
+    <string name="contacts_alert_button">Закрыть</string>
 
 </resources>

@@ -16,8 +16,12 @@ class MainViewModel(
 
     fun getLiveData() = liveDataToObserve
 
-    fun getCategoriesFromRemoteSource(isRus: Boolean, interactor: StringsInteractor) =
-        getDataFromRemoteSource(isRus, interactor)
+    fun getCategoriesFromRemoteSource(
+        isRus: Boolean,
+        interactor: StringsInteractor,
+        adult: Boolean
+    ) =
+        getDataFromRemoteSource(isRus, interactor, adult)
 
     fun getMoviesHistory() {
         liveDataToObserve.value = AppState.Loading
@@ -69,13 +73,17 @@ class MainViewModel(
         }
     }
 
-    private fun getDataFromRemoteSource(isRussian: Boolean, interactor: StringsInteractor) {
+    private fun getDataFromRemoteSource(
+        isRussian: Boolean,
+        interactor: StringsInteractor,
+        adult: Boolean
+    ) {
         liveDataToObserve.value = AppState.Loading
         launch(Dispatchers.IO) {
             try {
                 liveDataToObserve.postValue(
                     AppState.Success(
-                        repositoryImpl.getCategoriesFromRemoteStorage(isRussian, interactor)
+                        repositoryImpl.getCategoriesFromRemoteStorage(isRussian, interactor, adult)
                     )
                 )
             } catch (e: Exception) {

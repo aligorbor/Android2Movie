@@ -8,5 +8,6 @@ data class Category(
     val name: String = "",
     val movies: MutableList<Movie> = mutableListOf(),
     val id: Int = 0,
-    var isRus: Boolean = false
+    var isRus: Boolean = false,
+    var page: Int = 1
 ) : Parcelable

@@ -9,6 +9,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import ru.geekbrains.android2.movieapp.R
+import ru.geekbrains.android2.movieapp.contacts.ContactsFragment
 import ru.geekbrains.android2.movieapp.databinding.FragmentMainBinding
 import ru.geekbrains.android2.movieapp.interactors.StringsInteractorImpl
 import ru.geekbrains.android2.movieapp.model.Category
@@ -80,7 +81,8 @@ class MainFragment : Fragment() {
             restorePreferences()
             getCategoriesFromRemoteSource(
                 isDataSetRus,
-                StringsInteractorImpl(requireContext())
+                StringsInteractorImpl(requireContext()),
+                adult
             )
         }
     }
@@ -94,7 +96,8 @@ class MainFragment : Fragment() {
             isDataSetRus = !isDataSetRus
             viewModel.getCategoriesFromRemoteSource(
                 isDataSetRus,
-                StringsInteractorImpl(requireContext())
+                StringsInteractorImpl(requireContext()),
+                adult
             )
         }
     }
@@ -123,7 +126,8 @@ class MainFragment : Fragment() {
                     {
                         viewModel.getCategoriesFromRemoteSource(
                             isDataSetRus,
-                            StringsInteractorImpl(requireContext())
+                            StringsInteractorImpl(requireContext()),
+                            adult
                         )
                     })
             }
@@ -162,6 +166,15 @@ class MainFragment : Fragment() {
                 item.isChecked = !item.isChecked
                 adult = item.isChecked
                 savePreferences()
+                viewModel.getCategoriesFromRemoteSource(
+                    isDataSetRus,
+                    StringsInteractorImpl(requireContext()),
+                    adult
+                )
+                true
+            }
+            R.id.action_content_provider -> {
+                openFragment(ContactsFragment.newInstance())
                 true
             }
             else -> super.onOptionsItemSelected(item)

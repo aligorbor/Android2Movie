@@ -34,4 +34,11 @@
         android:title="@string/adult"
         app:showAsAction="never" />
 
+    <item
+        android:id="@+id/action_content_provider"
+        android:icon="@drawable/ic_contact_page_24"
+        android:orderInCategory="40"
+        android:title="@string/contacts"
+        app:showAsAction="ifRoom" />
+
 </menu>

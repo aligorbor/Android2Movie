@@ -8,6 +8,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.squareup.picasso.Picasso
 import ru.geekbrains.android2.movieapp.R
+import ru.geekbrains.android2.movieapp.model.Category
 import ru.geekbrains.android2.movieapp.model.Movie
 
 class MainFragmentAdapter(
@@ -17,10 +18,10 @@ class MainFragmentAdapter(
 ) :
     RecyclerView.Adapter<MainFragmentAdapter.MainViewHolder>() {
 
-    private var movieData: List<Movie> = listOf()
+    private var category: Category = Category()
 
-    fun setMovie(data: List<Movie>) {
-        movieData = data
+    fun setMovie(data: Category) {
+        category = data
         notifyDataSetChanged()
     }
 
@@ -32,11 +33,11 @@ class MainFragmentAdapter(
     }
 
     override fun onBindViewHolder(holder: MainViewHolder, position: Int) {
-        holder.bind(movieData[position])
+        holder.bind(category.movies[position])
     }
 
     override fun getItemCount(): Int {
-        return movieData.size
+        return category.movies.size
     }
 
     inner class MainViewHolder(view: View) : RecyclerView.ViewHolder(view) {
@@ -67,7 +68,7 @@ class MainFragmentAdapter(
                             imageFavorite.setImageResource(R.drawable.heart_red)
                         else
                             imageFavorite.setImageResource(R.drawable.heart_line)
-                        setSameMovies.setSameMoviesFavorite(movie)
+                        setSameMovies.setSameMoviesFavorite(movie, category.id)
                         setFavoriteToMovie.setFavorite(movie)
                     }
                 }

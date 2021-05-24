@@ -10,14 +10,19 @@ import ru.geekbrains.android2.movieapp.model.rest.rest_entities.CategoryDTO
 
 class RepositoryImpl : Repository {
 
-    override fun getCategoriesFromRemoteStorage(isRus: Boolean, interactor: StringsInteractor) =
-        loadCategories(isRus, interactor)
+    override fun getCategoriesFromRemoteStorage(
+        isRus: Boolean,
+        interactor: StringsInteractor,
+        adult: Boolean
+    ) =
+        loadCategories(isRus, interactor, adult)
 
     override fun getMovieDetailFromRemoteStorage(movie: Movie) = loadMovieDetail(movie)
 
     private fun loadCategories(
         isRus: Boolean,
-        interactor: StringsInteractor
+        interactor: StringsInteractor,
+        adult: Boolean
     ): MutableList<Category> {
         val page = 1
         val lang = if (isRus) languageRU
@@ -59,13 +64,62 @@ class RepositoryImpl : Repository {
                 },
                 id = 3
             )
-        )
+        ).apply {
+            addAll(loadCategoriesOfGenres(adult, lang, page))
+        }
     }
 
     private fun loadCategory(categoryName: String, language: String, page: Int): CategoryDTO? =
         BackendRepo.api.getCategory(categoryName, BuildConfig.MOVIE_API_KEY, language, page)
             .execute()
             .body()
+
+    private fun loadCategoriesOfGenres(
+        adult: Boolean,
+        language: String,
+        page: Int
+    ): MutableList<Category> {
+        val genresDTO = BackendRepo.api.getGenres(BuildConfig.MOVIE_API_KEY, language)
+            .execute()
+            .body()
+        val categoriesGenres = mutableListOf<Category>()
+        genresDTO?.let {
+            var id = constCategoryCount
+            for (genreDTO in genresDTO.genres) {
+                categoriesGenres.add(
+                    Category(
+                        name = genreDTO?.name ?: "",
+                        movies = toMovies(
+                            loadCategoryGenre(
+                                idGenre = genreDTO?.id ?: 0,
+                                adult = adult,
+                                language = language,
+                                page = page
+                            )
+                        ),
+                        id = id,
+                        page = page
+                    )
+                )
+                id++
+            }
+        }
+        return categoriesGenres
+    }
+
+    private fun loadCategoryGenre(
+        idGenre: Int,
+        adult: Boolean,
+        language: String,
+        page: Int
+    ): CategoryDTO? =
+        BackendRepo.api.getMoviesByGenre(
+            BuildConfig.MOVIE_API_KEY,
+            language, sortPopularityDesc, adult, idGenre, page
+        )
+            .execute()
+            .body()
+
 
     private fun loadMovieDetail(movie: Movie): Movie {
         val lang = if (movie.isRus) languageRU

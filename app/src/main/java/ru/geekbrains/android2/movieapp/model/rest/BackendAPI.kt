@@ -10,14 +10,33 @@ import ru.geekbrains.android2.movieapp.model.rest.rest_entities.MovieDetailDTO
 
 interface BackendAPI {
     @GET(endPointCategory)
-    fun getCategory(@Path("category") categoryName:String, @Query(paramApi_key) api_key:String,
-    @Query(paramLanguage) language:String, @Query(paramPage) page:Int): Call<CategoryDTO>
+    fun getCategory(
+        @Path("category") categoryName: String,
+        @Query(paramApi_key) api_key: String,
+        @Query(paramLanguage) language: String,
+        @Query(paramPage) page: Int
+    ): Call<CategoryDTO>
 
     @GET(endPointMovie)
-    fun getMovieDetail(@Path("movieId") id:Int, @Query(paramApi_key) api_key:String,
-                    @Query(paramLanguage) language:String): Call<MovieDetailDTO>
+    fun getMovieDetail(
+        @Path("movieId") id: Int,
+        @Query(paramApi_key) api_key: String,
+        @Query(paramLanguage) language: String
+    ): Call<MovieDetailDTO>
 
     @GET(endPointGenre)
-    fun getGenres(@Query(paramApi_key) api_key:String,
-                       @Query(paramLanguage) language:String): Call<GenresDTO>
+    fun getGenres(
+        @Query(paramApi_key) api_key: String,
+        @Query(paramLanguage) language: String
+    ): Call<GenresDTO>
+
+    @GET(endPointDiscoverMovie)
+    fun getMoviesByGenre(
+        @Query(paramApi_key) api_key: String,
+        @Query(paramLanguage) language: String,
+        @Query(paramSortBy) sortBy: String,
+        @Query(paramAdult) adult: Boolean,
+        @Query(paramGenres) idGenre: Int,
+        @Query(paramPage) page: Int
+    ): Call<CategoryDTO>
 }
