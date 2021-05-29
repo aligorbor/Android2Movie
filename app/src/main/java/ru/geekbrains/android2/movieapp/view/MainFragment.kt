@@ -12,9 +12,13 @@ import ru.geekbrains.android2.movieapp.R
 import ru.geekbrains.android2.movieapp.contacts.ContactsFragment
 import ru.geekbrains.android2.movieapp.databinding.FragmentMainBinding
 import ru.geekbrains.android2.movieapp.interactors.StringsInteractorImpl
+import ru.geekbrains.android2.movieapp.map.MapsFragment
+import ru.geekbrains.android2.movieapp.map.MapsFragment.Companion.BUNDLE_ADDRESS_STR
 import ru.geekbrains.android2.movieapp.model.Category
 import ru.geekbrains.android2.movieapp.model.Movie
 import ru.geekbrains.android2.movieapp.utils.showSnackBar
+import ru.geekbrains.android2.movieapp.view.PeoplesFragment.Companion.BUNDLE_ADULT
+import ru.geekbrains.android2.movieapp.view.PeoplesFragment.Companion.BUNDLE_IS_RUS
 import ru.geekbrains.android2.movieapp.viewmodel.AppState
 import ru.geekbrains.android2.movieapp.viewmodel.MainViewModel
 
@@ -162,6 +166,13 @@ class MainFragment : Fragment() {
                 viewModel.getMoviesFavorite()
                 true
             }
+            R.id.action_persons -> {
+                openFragment(PeoplesFragment.newInstance(Bundle().apply {
+                    putBoolean(BUNDLE_IS_RUS, isDataSetRus)
+                    putBoolean(BUNDLE_ADULT, adult)
+                }))
+                true
+            }
             R.id.action_adult -> {
                 item.isChecked = !item.isChecked
                 adult = item.isChecked
@@ -175,6 +186,12 @@ class MainFragment : Fragment() {
             }
             R.id.action_content_provider -> {
                 openFragment(ContactsFragment.newInstance())
+                true
+            }
+            R.id.action_google_maps -> {
+                openFragment(MapsFragment.newInstance(Bundle().apply {
+                    putString(BUNDLE_ADDRESS_STR, "")
+                }))
                 true
             }
             else -> super.onOptionsItemSelected(item)

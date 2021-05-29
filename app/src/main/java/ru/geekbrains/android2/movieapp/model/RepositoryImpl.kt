@@ -7,6 +7,7 @@ import ru.geekbrains.android2.movieapp.model.database.FavoriteEntity
 import ru.geekbrains.android2.movieapp.model.database.HistoryEntity
 import ru.geekbrains.android2.movieapp.model.rest.*
 import ru.geekbrains.android2.movieapp.model.rest.rest_entities.CategoryDTO
+import ru.geekbrains.android2.movieapp.model.rest.rest_entities.PersonsDTO
 
 class RepositoryImpl : Repository {
 
@@ -18,6 +19,21 @@ class RepositoryImpl : Repository {
         loadCategories(isRus, interactor, adult)
 
     override fun getMovieDetailFromRemoteStorage(movie: Movie) = loadMovieDetail(movie)
+
+    override fun getPersonsPopularFromRemoteStorage(isRus: Boolean, adult: Boolean): Persons {
+        val page = 1
+        val lang = if (isRus) languageRU
+        else languageEN
+        return Persons(
+            name = personPopular,
+            persons = toPersons(loadPersons(personPopular, lang, page)),
+            id = 0,
+            isRus = isRus,
+            page = page
+        )
+    }
+
+    override fun getPersonDetailFromRemoteStorage(person: Person) = loadPersonDetail(person)
 
     private fun loadCategories(
         isRus: Boolean,
@@ -74,6 +90,11 @@ class RepositoryImpl : Repository {
             .execute()
             .body()
 
+    private fun loadPersons(categoryName: String, language: String, page: Int): PersonsDTO? =
+        BackendRepo.api.getPerson(categoryName, BuildConfig.MOVIE_API_KEY, language, page)
+            .execute()
+            .body()
+
     private fun loadCategoriesOfGenres(
         adult: Boolean,
         language: String,
@@ -126,6 +147,16 @@ class RepositoryImpl : Repository {
         else languageEN
         return toMovieDetail(
             movie, BackendRepo.api.getMovieDetail(movie.id, BuildConfig.MOVIE_API_KEY, lang)
+                .execute()
+                .body()
+        )
+    }
+
+    private fun loadPersonDetail(person: Person): Person {
+        val lang = if (person.isRus) languageRU
+        else languageEN
+        return toPersonDetail(
+            person, BackendRepo.api.getPersonDetail(person.id, BuildConfig.MOVIE_API_KEY, lang)
                 .execute()
                 .body()
         )

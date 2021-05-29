@@ -28,3 +28,6 @@ const val endPointImage = "/t/p/w200"
 const val ImageNotFound = "/kqjL17yufvn9OVLyXYpvtyrFfak.jpg"
 
 const val constCategoryCount = 4
+
+const val endPointPerson = "person/{category}"
+const val personPopular = "popular"

@@ -35,10 +35,23 @@
         app:showAsAction="never" />
 
     <item
+        android:id="@+id/action_persons"
+        android:icon="@android:drawable/ic_menu_myplaces"
+        android:orderInCategory="45"
+        android:title="@string/persons"
+        app:showAsAction="ifRoom" />
+
+    <item
         android:id="@+id/action_content_provider"
         android:icon="@drawable/ic_contact_page_24"
-        android:orderInCategory="40"
+        android:orderInCategory="50"
         android:title="@string/contacts"
+        app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/action_google_maps"
+        android:icon="@android:drawable/ic_dialog_map"
+        android:orderInCategory="60"
+        android:title="@string/map"
         app:showAsAction="ifRoom" />
 
 </menu>

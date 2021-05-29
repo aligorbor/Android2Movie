@@ -11,6 +11,13 @@ interface Repository {
 
     fun getMovieDetailFromRemoteStorage(movie: Movie): Movie
 
+    fun getPersonsPopularFromRemoteStorage(
+        isRus: Boolean,
+        adult: Boolean
+    ): Persons
+
+    fun getPersonDetailFromRemoteStorage(person: Person): Person
+
     fun getAllHistory(): List<Movie>
     fun saveToHistory(movie: Movie)
     fun getAllFavorite(): List<Movie>

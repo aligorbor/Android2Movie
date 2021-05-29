@@ -4,9 +4,7 @@ import retrofit2.Call
 import retrofit2.http.GET
 import retrofit2.http.Path
 import retrofit2.http.Query
-import ru.geekbrains.android2.movieapp.model.rest.rest_entities.CategoryDTO
-import ru.geekbrains.android2.movieapp.model.rest.rest_entities.GenresDTO
-import ru.geekbrains.android2.movieapp.model.rest.rest_entities.MovieDetailDTO
+import ru.geekbrains.android2.movieapp.model.rest.rest_entities.*
 
 interface BackendAPI {
     @GET(endPointCategory)
@@ -39,4 +37,19 @@ interface BackendAPI {
         @Query(paramGenres) idGenre: Int,
         @Query(paramPage) page: Int
     ): Call<CategoryDTO>
+
+    @GET(endPointPerson)
+    fun getPerson(
+        @Path("category") categoryName: String,
+        @Query(paramApi_key) api_key: String,
+        @Query(paramLanguage) language: String,
+        @Query(paramPage) page: Int
+    ): Call<PersonsDTO>
+
+    @GET(endPointPerson)
+    fun getPersonDetail(
+        @Path("category") id: Int,
+        @Query(paramApi_key) api_key: String,
+        @Query(paramLanguage) language: String
+    ): Call<PersonDetailDTO>
 }

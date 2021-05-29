@@ -3,10 +3,7 @@ package ru.geekbrains.android2.movieapp.model
 import ru.geekbrains.android2.movieapp.model.rest.ImageNotFound
 import ru.geekbrains.android2.movieapp.model.rest.endPointImage
 import ru.geekbrains.android2.movieapp.model.rest.imageLink
-import ru.geekbrains.android2.movieapp.model.rest.rest_entities.CategoryDTO
-import ru.geekbrains.android2.movieapp.model.rest.rest_entities.GenreDTO
-import ru.geekbrains.android2.movieapp.model.rest.rest_entities.GenresDTO
-import ru.geekbrains.android2.movieapp.model.rest.rest_entities.MovieDetailDTO
+import ru.geekbrains.android2.movieapp.model.rest.rest_entities.*
 
 fun toMovies(categoryDTO: CategoryDTO?): MutableList<Movie> {
     val movies: MutableList<Movie> = mutableListOf()
@@ -49,6 +46,43 @@ fun toMovieDetail(movie: Movie, movieDetailDTO: MovieDetailDTO?): Movie {
         }
     }
     return movie
+}
+
+fun toPersons(personsDTO: PersonsDTO?): MutableList<Person> {
+    val persons: MutableList<Person> = mutableListOf()
+    personsDTO?.let {
+        for (result in personsDTO.results) {
+            persons.add(
+                Person(
+                    adult = result?.adult ?: false,
+                    gender = result?.gender ?: 0,
+                    id = result?.id ?: 0,
+                    known_for = toMovies(CategoryDTO(1, result?.known_for ?: arrayOf(), 1, 0)),
+                    known_for_department = result?.known_for_department ?: "",
+                    name = result?.name ?: "",
+                    popularity = result?.popularity ?: 0.0,
+                    profile_path = "$imageLink$endPointImage${result?.profile_path ?: ImageNotFound}"
+                )
+            )
+        }
+    }
+    return persons
+}
+
+fun toPersonDetail(person: Person, personDetailDTO: PersonDetailDTO?): Person {
+    person.adult = personDetailDTO?.adult ?: false
+    person.biography = personDetailDTO?.biography ?: ""
+    person.birthday = personDetailDTO?.birthday ?: ""
+    person.deathday = personDetailDTO?.deathday ?: ""
+    person.gender = personDetailDTO?.gender ?: 0
+    person.homepage = personDetailDTO?.homepage ?: ""
+    person.id = personDetailDTO?.id ?: 0
+    person.imdb_id = personDetailDTO?.imdb_id ?: ""
+    person.known_for_department = personDetailDTO?.known_for_department ?: ""
+    person.name = personDetailDTO?.name ?: ""
+    person.place_of_birth = personDetailDTO?.place_of_birth ?: ""
+    person.popularity = personDetailDTO?.popularity ?: 0.0
+    return person
 }
 
 fun toGenres(genresDTO: GenresDTO?): MutableList<Genre> {
