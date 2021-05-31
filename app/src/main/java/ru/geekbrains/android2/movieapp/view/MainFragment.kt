@@ -126,7 +126,7 @@ class MainFragment : Fragment() {
                 mainFragmentLoadingLayout.visibility = View.GONE
                 mainFragmentRootView.showSnackBar(
                     appState.error.message ?: "",
-                    "Reload",
+                    getString(R.string.reload),
                     {
                         viewModel.getCategoriesFromRemoteSource(
                             isDataSetRus,
@@ -237,7 +237,7 @@ class MainFragment : Fragment() {
 
     companion object {
         private const val adultKey = "adultKey"
-        private const val preferencesName = "MainPreferences"
+        const val preferencesName = "MainPreferences"
         fun newInstance() =
             MainFragment()
     }

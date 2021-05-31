@@ -141,8 +141,8 @@ class MapsFragment : Fragment() {
                 // Будем получать геоположение через каждые 60 секунд или каждые 100 метров
                 locationManager.requestLocationUpdates(
                     LocationManager.GPS_PROVIDER,
-                    5000L,
-                    10f,
+                    MIN_TIME_MS,
+                    MIN_DISTANCE_M,
                     onLocationListener
                 )
             }
@@ -218,8 +218,8 @@ class MapsFragment : Fragment() {
 
     private fun goToAddress(address: MutableList<Address>, view: View) {
         view.post {
-            location = LatLng(address[0].latitude, address[0].longitude)
-            setMarker(address[0].getAddressLine(0))
+            location = LatLng(address.first().latitude, address.first().longitude)
+            setMarker(address.first().getAddressLine(0))
             map.moveCamera(
                 CameraUpdateFactory.newLatLngZoom(
                     location, 15f
@@ -234,12 +234,18 @@ class MapsFragment : Fragment() {
                 .position(location)
                 .title(searchText)
         )
-        markers.add(marker)
-        drawLine()
+        marker?.let {
+            markers.add(marker)
+            drawLine()
+        }
+
     }
 
     companion object {
         const val BUNDLE_ADDRESS_STR = "address_str"
+        private const val MIN_TIME_MS = 5000L
+        private const val MIN_DISTANCE_M = 10f
+
         fun newInstance(bundle: Bundle): MapsFragment {
             val fragment = MapsFragment()
             fragment.arguments = bundle

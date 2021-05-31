@@ -75,7 +75,6 @@ class PeoplesFragment : Fragment() {
                 adult
             )
         }
-
     }
 
     private fun renderData(appState: AppStatePeoples) = with(binding) {
@@ -92,7 +91,7 @@ class PeoplesFragment : Fragment() {
                 peoplesFragmentLoadingLayout.visibility = View.GONE
                 peoplesFragmentRootView.showSnackBar(
                     appState.error.message ?: "",
-                    "Reload",
+                    getString(R.string.reload),
                     {
                         viewModel.getPeoplesFromRemoteSource(
                             isDataSetRus,
