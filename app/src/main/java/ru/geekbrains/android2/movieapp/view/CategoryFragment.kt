@@ -5,14 +5,20 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
 import ru.geekbrains.android2.movieapp.R
 import ru.geekbrains.android2.movieapp.databinding.FragmentCategoryBinding
+import ru.geekbrains.android2.movieapp.interactors.StringsInteractorImpl
 import ru.geekbrains.android2.movieapp.model.Category
 import ru.geekbrains.android2.movieapp.model.Movie
+import ru.geekbrains.android2.movieapp.utils.showSnackBar
+import ru.geekbrains.android2.movieapp.viewmodel.AppState
+import ru.geekbrains.android2.movieapp.viewmodel.CategoryViewModel
 
 class CategoryFragment : Fragment() {
     private var _binding: FragmentCategoryBinding? = null
     private val binding get() = _binding!!
+    private lateinit var viewModel: CategoryViewModel
 
     private val onItemViewClickListener = object : OnItemViewClickListener {
         override fun onItemViewClick(movie: Movie) {
@@ -28,10 +34,22 @@ class CategoryFragment : Fragment() {
         }
     }
 
+    private val onNewPage = object : OnNewPage {
+        override fun getPage(isRus: Boolean, adult: Boolean, page: Int, id: Int) {
+            viewModel.getCategoryByIdFromRemoteSource(
+                isRus,
+                StringsInteractorImpl(requireContext()),
+                adult,
+                page,
+                id
+            )
+        }
+    }
+
     private var category = Category()
 
     private val adapter =
-        CategoryFragmentAdapter(onItemViewClickListener)
+        CategoryFragmentAdapter(onItemViewClickListener, onNewPage)
 
     companion object {
         const val BUNDLE_EXTRA = "category"
@@ -56,10 +74,51 @@ class CategoryFragment : Fragment() {
             category = it
         }
         binding.categoryFragmentRecyclerView.adapter = adapter
-        adapter.setMovie(category.movies)
+        adapter.setMovie(category)
+        viewModel = ViewModelProvider(this).get(CategoryViewModel::class.java).apply {
+            getLiveData().observe(viewLifecycleOwner, {
+                renderData(it)
+            })
+        }
+    }
+
+    private fun renderData(appState: AppState) = with(binding) {
+        when (appState) {
+            is AppState.SuccessCategoryById -> {
+                categoryFragmentLoadingLayout.visibility = View.GONE
+                adapter.setMovie(appState.category)
+            }
+            is AppState.Loading -> {
+                categoryFragmentLoadingLayout.visibility = View.VISIBLE
+            }
+            is AppState.Error -> {
+                categoryFragmentLoadingLayout.visibility = View.GONE
+                categoryFragmentRootView.showSnackBar(
+                    appState.error.message ?: "",
+                    getString(R.string.reload),
+                    {
+                        viewModel.getCategoryByIdFromRemoteSource(
+                            category.isRus,
+                            StringsInteractorImpl(requireContext()),
+                            category.adult,
+                            category.page,
+                            category.id
+                        )
+                    })
+            }
+        }
     }
 
     interface OnItemViewClickListener {
         fun onItemViewClick(movie: Movie)
+    }
+
+    interface OnNewPage {
+        fun getPage(
+            isRus: Boolean,
+            adult: Boolean,
+            page: Int,
+            id: Int
+        )
     }
 }

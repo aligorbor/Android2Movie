@@ -59,25 +59,16 @@ class DetailsPeopleFragment : Fragment() {
             openFragment(MapsFragment.newInstance(Bundle().apply {
                 putString(BUNDLE_ADDRESS_STR, people.place_of_birth)
             }))
-//            activity?.supportFragmentManager?.apply {
-//                beginTransaction()
-//                    .add(R.id.container, MapsFragment.newInstance(Bundle().apply {
-//                        putString(BUNDLE_ADDRESS_STR,people.place_of_birth)
-//                    }))
-//                    .addToBackStack("")
-//                    .commitAllowingStateLoss()
-            //          }
         }
         binding.detailsPeoplePoster.setOnClickListener {
             openFragment(CategoryFragment.newInstance(Bundle().apply {
                 putParcelable(
                     CategoryFragment.BUNDLE_EXTRA,
-                    Category("", people.known_for, 0, people.isRus, 1)
+                    Category("", people.known_for, 0, people.isRus, false, 1, 1)
                 )
             }))
         }
     }
-
 
     private fun renderData(appState: AppStateDetailsPeople) = with(binding) {
         when (appState) {

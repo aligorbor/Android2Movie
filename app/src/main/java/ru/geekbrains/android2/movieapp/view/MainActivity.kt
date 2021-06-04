@@ -1,10 +1,9 @@
 package ru.geekbrains.android2.movieapp.view
 
-import android.content.IntentFilter
-import android.net.ConnectivityManager
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.GravityCompat
 import ru.geekbrains.android2.movieapp.R
 import ru.geekbrains.android2.movieapp.databinding.MainActivityBinding
 import ru.geekbrains.android2.movieapp.services.NetworkCondition
@@ -39,6 +38,23 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun initToolBar() {
-        setSupportActionBar(binding.activityToolbar)
+        val toolbar = binding.activityToolbar
+        setSupportActionBar(toolbar)
+        val fragmentManager = supportFragmentManager
+        fragmentManager.addOnBackStackChangedListener {
+            if (fragmentManager.backStackEntryCount > 0) {
+                // show back button
+                supportActionBar?.let {
+                    it.setDisplayHomeAsUpEnabled(true)
+                    it.setHomeButtonEnabled(true)
+                    toolbar.setNavigationOnClickListener { v: View? -> onBackPressed() }
+                }
+            } else {
+                supportActionBar?.let {
+                    it.setDisplayHomeAsUpEnabled(false)
+                    it.setHomeButtonEnabled(false)
+                }
+            }
+        }
     }
 }

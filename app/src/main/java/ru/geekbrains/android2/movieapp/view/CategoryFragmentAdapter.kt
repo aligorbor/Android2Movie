@@ -8,16 +8,23 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.squareup.picasso.Picasso
 import ru.geekbrains.android2.movieapp.R
+import ru.geekbrains.android2.movieapp.model.Category
 import ru.geekbrains.android2.movieapp.model.Movie
 
-class CategoryFragmentAdapter(private var onItemViewClickListener: CategoryFragment.OnItemViewClickListener) :
+class CategoryFragmentAdapter(
+    private var onItemViewClickListener: CategoryFragment.OnItemViewClickListener,
+    private var onNewPage: CategoryFragment.OnNewPage
+) :
     RecyclerView.Adapter<CategoryFragmentAdapter.MainViewHolder>() {
 
-    private var movieData: List<Movie> = listOf()
+    private var category: Category = Category()
+    private var movieList = mutableListOf<Movie>()
 
-    fun setMovie(data: List<Movie>) {
-        movieData = data
-        notifyDataSetChanged()
+    fun setMovie(data: Category) {
+        val firstItemPosition = movieList.size
+        movieList.addAll(data.movies)
+        category = data
+        notifyItemRangeInserted(firstItemPosition, category.movies.size)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MainViewHolder {
@@ -28,11 +35,14 @@ class CategoryFragmentAdapter(private var onItemViewClickListener: CategoryFragm
     }
 
     override fun onBindViewHolder(holder: MainViewHolder, position: Int) {
-        holder.bind(movieData[position])
+        if (position == movieList.size - 1 && category.page < category.total_pages) {
+            onNewPage.getPage(category.isRus, category.adult, category.page + 1, category.id)
+        }
+        holder.bind(movieList[position])
     }
 
     override fun getItemCount(): Int {
-        return movieData.size
+        return movieList.size
     }
 
     inner class MainViewHolder(view: View) : RecyclerView.ViewHolder(view) {

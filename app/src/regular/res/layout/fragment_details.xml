@@ -144,16 +144,6 @@
                 android:text="@string/overview"
                 android:textSize="@dimen/details_text_size" />
 
-            <ImageView
-                android:id="@+id/details_backdrop"
-                android:layout_width="300dp"
-                android:layout_height="200dp"
-                android:layout_gravity="center"
-                android:layout_marginStart="@dimen/details_marginStart"
-                android:contentDescription="@string/poster_description"
-                android:scaleType="fitXY"
-                tools:srcCompat="@drawable/back" />
-
             <View
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/height_divider"

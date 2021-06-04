@@ -15,20 +15,21 @@ class PeoplesViewModel(
 
     fun getPeoplesFromRemoteSource(
         isRus: Boolean,
-        adult: Boolean
-    ) =
-        getDataFromRemoteSource(isRus, adult)
+        adult: Boolean,
+        page: Int
+    ) = getDataFromRemoteSource(isRus, adult, page)
 
     private fun getDataFromRemoteSource(
         isRussian: Boolean,
-        adult: Boolean
+        adult: Boolean,
+        page: Int
     ) {
         liveDataToObserve.value = AppStatePeoples.Loading
         launch(Dispatchers.IO) {
             try {
                 liveDataToObserve.postValue(
                     AppStatePeoples.Success(
-                        repositoryImpl.getPersonsPopularFromRemoteStorage(isRussian, adult)
+                        repositoryImpl.getPersonsPopularFromRemoteStorage(isRussian, adult, page)
                     )
                 )
             } catch (e: Exception) {

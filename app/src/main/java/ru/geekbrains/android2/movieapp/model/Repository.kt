@@ -6,14 +6,16 @@ interface Repository {
     fun getCategoriesFromRemoteStorage(
         isRus: Boolean,
         interactor: StringsInteractor,
-        adult: Boolean
+        adult: Boolean,
+        page: Int
     ): List<Category>
 
     fun getMovieDetailFromRemoteStorage(movie: Movie): Movie
 
     fun getPersonsPopularFromRemoteStorage(
         isRus: Boolean,
-        adult: Boolean
+        adult: Boolean,
+        page: Int
     ): Persons
 
     fun getPersonDetailFromRemoteStorage(person: Person): Person
@@ -25,5 +27,13 @@ interface Repository {
     fun deleteFromFavorite(id: Int)
     fun isFavorite(id: Int): Boolean
     fun getNote(id: Int): String
+
+    fun getCategoryByIdFromRemoteStorage(
+        isRus: Boolean,
+        interactor: StringsInteractor,
+        adult: Boolean,
+        page: Int,
+        id: Int
+    ): Category
 
 }

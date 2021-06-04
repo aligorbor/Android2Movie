@@ -19,9 +19,19 @@ class MainViewModel(
     fun getCategoriesFromRemoteSource(
         isRus: Boolean,
         interactor: StringsInteractor,
-        adult: Boolean
+        adult: Boolean,
+        page: Int
     ) =
-        getDataFromRemoteSource(isRus, interactor, adult)
+        getDataFromRemoteSource(isRus, interactor, adult, page)
+
+    fun getCategoryByIdFromRemoteSource(
+        isRus: Boolean,
+        interactor: StringsInteractor,
+        adult: Boolean,
+        page: Int,
+        id: Int
+    ) =
+        getDataByIdFromRemoteSource(isRus, interactor, adult, page, id)
 
     fun getMoviesHistory() {
         liveDataToObserve.value = AppState.Loading
@@ -76,14 +86,47 @@ class MainViewModel(
     private fun getDataFromRemoteSource(
         isRussian: Boolean,
         interactor: StringsInteractor,
-        adult: Boolean
+        adult: Boolean,
+        page: Int
     ) {
         liveDataToObserve.value = AppState.Loading
         launch(Dispatchers.IO) {
             try {
                 liveDataToObserve.postValue(
                     AppState.Success(
-                        repositoryImpl.getCategoriesFromRemoteStorage(isRussian, interactor, adult)
+                        repositoryImpl.getCategoriesFromRemoteStorage(
+                            isRussian,
+                            interactor,
+                            adult,
+                            page
+                        )
+                    )
+                )
+            } catch (e: Exception) {
+                liveDataToObserve.postValue(AppState.Error(e))
+            }
+        }
+    }
+
+    private fun getDataByIdFromRemoteSource(
+        isRussian: Boolean,
+        interactor: StringsInteractor,
+        adult: Boolean,
+        page: Int,
+        id: Int
+    ) {
+        liveDataToObserve.value = AppState.Loading
+        launch(Dispatchers.IO) {
+            try {
+                liveDataToObserve.postValue(
+                    AppState.SuccessCategoryById(
+                        repositoryImpl.getCategoryByIdFromRemoteStorage(
+                            isRussian,
+                            interactor,
+                            adult,
+                            page,
+                            id
+                        )
                     )
                 )
             } catch (e: Exception) {

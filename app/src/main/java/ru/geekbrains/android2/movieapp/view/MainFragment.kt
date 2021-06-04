@@ -38,9 +38,20 @@ class MainFragment : Fragment() {
     private val onCategoryClickListener = object : OnCategoryClickListener {
         override fun onCategoryClick(category: Category) {
             openFragment(CategoryFragment.newInstance(Bundle().apply {
-                category.isRus = isDataSetRus
                 putParcelable(CategoryFragment.BUNDLE_EXTRA, category)
             }))
+        }
+    }
+
+    private val onNewPage = object : OnNewPage {
+        override fun getPage(isRus: Boolean, adult: Boolean, page: Int, id: Int) {
+            viewModel.getCategoryByIdFromRemoteSource(
+                isDataSetRus,
+                StringsInteractorImpl(requireContext()),
+                adult,
+                page,
+                id
+            )
         }
     }
 
@@ -58,7 +69,8 @@ class MainFragment : Fragment() {
         MainFragmentCategoryAdapter(
             onItemViewClickListener,
             onCategoryClickListener,
-            setFavoriteToMovie
+            setFavoriteToMovie,
+            onNewPage
         )
 
 
@@ -86,7 +98,8 @@ class MainFragment : Fragment() {
             getCategoriesFromRemoteSource(
                 isDataSetRus,
                 StringsInteractorImpl(requireContext()),
-                adult
+                adult,
+                1
             )
         }
     }
@@ -101,7 +114,8 @@ class MainFragment : Fragment() {
             viewModel.getCategoriesFromRemoteSource(
                 isDataSetRus,
                 StringsInteractorImpl(requireContext()),
-                adult
+                adult,
+                1
             )
         }
     }
@@ -111,6 +125,10 @@ class MainFragment : Fragment() {
             is AppState.Success -> {
                 mainFragmentLoadingLayout.visibility = View.GONE
                 adapterCategory.setCategory(appState.categoryData)
+            }
+            is AppState.SuccessCategoryById -> {
+                mainFragmentLoadingLayout.visibility = View.GONE
+                adapterCategory.setCategoryById(appState.category)
             }
             is AppState.SuccessCategory -> {
                 mainFragmentLoadingLayout.visibility = View.GONE
@@ -131,7 +149,8 @@ class MainFragment : Fragment() {
                         viewModel.getCategoriesFromRemoteSource(
                             isDataSetRus,
                             StringsInteractorImpl(requireContext()),
-                            adult
+                            adult,
+                            1
                         )
                     })
             }
@@ -180,7 +199,8 @@ class MainFragment : Fragment() {
                 viewModel.getCategoriesFromRemoteSource(
                     isDataSetRus,
                     StringsInteractorImpl(requireContext()),
-                    adult
+                    adult,
+                    1
                 )
                 true
             }
@@ -233,6 +253,15 @@ class MainFragment : Fragment() {
 
     interface SetFavoriteToMovie {
         fun setFavorite(movie: Movie)
+    }
+
+    interface OnNewPage {
+        fun getPage(
+            isRus: Boolean,
+            adult: Boolean,
+            page: Int,
+            id: Int
+        )
     }
 
     companion object {

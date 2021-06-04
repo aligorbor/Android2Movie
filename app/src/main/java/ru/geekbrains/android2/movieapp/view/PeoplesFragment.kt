@@ -33,10 +33,20 @@ class PeoplesFragment : Fragment() {
         }
     }
 
+    private val onNewPage = object : OnNewPage {
+        override fun getPage(isRus: Boolean, adult: Boolean, page: Int) {
+            viewModel.getPeoplesFromRemoteSource(
+                isDataSetRus,
+                adult,
+                page
+            )
+        }
+    }
+
     private var peoples = Persons()
 
     private val adapter =
-        PeoplesFragmentAdapter(onItemViewClickListener)
+        PeoplesFragmentAdapter(onItemViewClickListener, onNewPage)
     private var isDataSetRus: Boolean = true
     private var adult: Boolean = false
 
@@ -72,7 +82,8 @@ class PeoplesFragment : Fragment() {
             })
             getPeoplesFromRemoteSource(
                 isDataSetRus,
-                adult
+                adult,
+                1
             )
         }
     }
@@ -95,7 +106,8 @@ class PeoplesFragment : Fragment() {
                     {
                         viewModel.getPeoplesFromRemoteSource(
                             isDataSetRus,
-                            adult
+                            adult,
+                            1
                         )
                     })
             }
@@ -104,5 +116,13 @@ class PeoplesFragment : Fragment() {
 
     interface OnItemViewClickListener {
         fun onItemViewClick(person: Person)
+    }
+
+    interface OnNewPage {
+        fun getPage(
+            isRus: Boolean,
+            adult: Boolean,
+            page: Int
+        )
     }
 }

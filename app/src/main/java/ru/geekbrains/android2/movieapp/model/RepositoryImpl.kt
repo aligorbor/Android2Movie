@@ -14,74 +14,131 @@ class RepositoryImpl : Repository {
     override fun getCategoriesFromRemoteStorage(
         isRus: Boolean,
         interactor: StringsInteractor,
-        adult: Boolean
+        adult: Boolean,
+        page: Int
     ) =
-        loadCategories(isRus, interactor, adult)
+        loadCategories(isRus, interactor, adult, page)
 
     override fun getMovieDetailFromRemoteStorage(movie: Movie) = loadMovieDetail(movie)
 
-    override fun getPersonsPopularFromRemoteStorage(isRus: Boolean, adult: Boolean): Persons {
-        val page = 1
+    override fun getPersonsPopularFromRemoteStorage(
+        isRus: Boolean,
+        adult: Boolean,
+        page: Int
+    ): Persons {
         val lang = if (isRus) languageRU
         else languageEN
-        return Persons(
-            name = personPopular,
-            persons = toPersons(loadPersons(personPopular, lang, page)),
-            id = 0,
-            isRus = isRus,
-            page = page
-        )
+        return toPersons(loadPersons(personPopular, lang, page)).apply {
+            this.isRus = isRus
+            this.adult = adult
+        }
     }
 
     override fun getPersonDetailFromRemoteStorage(person: Person) = loadPersonDetail(person)
 
+    override fun getCategoryByIdFromRemoteStorage(
+        isRus: Boolean,
+        interactor: StringsInteractor,
+        adult: Boolean,
+        page: Int,
+        id: Int
+    ): Category {
+        val lang = if (isRus) languageRU
+        else languageEN
+        var category = Category()
+        when (id) {
+            0 -> category = toCategory(loadCategory(categoryNowPlaying, lang, page)).apply {
+                this.name = interactor.strNowPlaying
+                this.movies.map { it.isFavorite = isFavorite(it.id) }
+                this.id = 0
+                this.isRus = isRus
+                this.adult = adult
+            }
+            1 -> category = toCategory(loadCategory(categoryPopular, lang, page)).apply {
+                this.name = interactor.strPopular
+                this.movies.map { it.isFavorite = isFavorite(it.id) }
+                this.id = 1
+                this.isRus = isRus
+                this.adult = adult
+            }
+            2 -> category = toCategory(loadCategory(categoryTopRated, lang, page)).apply {
+                this.name = interactor.strTopRated
+                this.movies.map { it.isFavorite = isFavorite(it.id) }
+                this.id = 2
+                this.isRus = isRus
+                this.adult = adult
+            }
+            3 -> category = toCategory(loadCategory(categoryUpComing, lang, page)).apply {
+                this.name = interactor.strUpcoming
+                this.movies.map { it.isFavorite = isFavorite(it.id) }
+                this.id = 3
+                this.isRus = isRus
+                this.adult = adult
+            }
+            else -> if (id >= constCategoryCount) {
+                val genresDTO = BackendRepo.api.getGenres(BuildConfig.MOVIE_API_KEY, lang)
+                    .execute()
+                    .body()
+                genresDTO?.let {
+                    category = toCategory(
+                        loadCategoryGenre(
+                            idGenre = it.genres[id - constCategoryCount]?.id ?: 0,
+                            adult = adult,
+                            language = lang,
+                            page = page
+                        )
+                    ).apply {
+                        this.name = it.genres[id - constCategoryCount]?.name ?: ""
+                        this.movies.map { it.isFavorite = isFavorite(it.id) }
+                        this.id = id
+                        this.isRus = isRus
+                        this.adult = adult
+                    }
+                }
+            }
+        }
+        return category
+    }
+
     private fun loadCategories(
         isRus: Boolean,
         interactor: StringsInteractor,
-        adult: Boolean
+        adult: Boolean,
+        page: Int
     ): MutableList<Category> {
-        val page = 1
         val lang = if (isRus) languageRU
         else languageEN
         return mutableListOf(
-            Category(
-                name = interactor.strNowPlaying,
-                movies = toMovies(
-                    loadCategory(categoryNowPlaying, lang, page)
-                ).apply {
-                    map { it.isFavorite = isFavorite(it.id) }
-                },
-                id = 0
-            ),
-            Category(
-                name = interactor.strPopular,
-                movies = toMovies(
-                    loadCategory(categoryPopular, lang, page)
-                ).apply {
-                    map { it.isFavorite = isFavorite(it.id) }
-                },
-                id = 1
-            ),
-            Category(
-                name = interactor.strTopRated,
-                movies = toMovies(
-                    loadCategory(categoryTopRated, lang, page)
-                ).apply {
-                    map { it.isFavorite = isFavorite(it.id) }
-                },
-                id = 2
-            ),
-            Category(
-                name = interactor.strUpcoming,
-                movies = toMovies(
-                    loadCategory(categoryUpComing, lang, page)
-                ).apply {
-                    map { it.isFavorite = isFavorite(it.id) }
-                },
-                id = 3
-            )
+            toCategory(loadCategory(categoryNowPlaying, lang, page)).apply {
+                this.name = interactor.strNowPlaying
+                this.movies.map { it.isFavorite = isFavorite(it.id) }
+                this.id = 0
+                this.isRus = isRus
+                this.adult = adult
+            },
+            toCategory(loadCategory(categoryPopular, lang, page)).apply {
+                this.name = interactor.strPopular
+                this.movies.map { it.isFavorite = isFavorite(it.id) }
+                this.id = 1
+                this.isRus = isRus
+                this.adult = adult
+            },
+            toCategory(loadCategory(categoryTopRated, lang, page)).apply {
+                this.name = interactor.strTopRated
+                this.movies.map { it.isFavorite = isFavorite(it.id) }
+                this.id = 2
+                this.isRus = isRus
+                this.adult = adult
+            },
+            toCategory(loadCategory(categoryUpComing, lang, page)).apply {
+                this.name = interactor.strUpcoming
+                this.movies.map { it.isFavorite = isFavorite(it.id) }
+                this.id = 3
+                this.isRus = isRus
+                this.adult = adult
+            },
         ).apply {
-            addAll(loadCategoriesOfGenres(adult, lang, page))
+            addAll(loadCategoriesOfGenres(adult, isRus, page))
         }
     }
 
@@ -97,30 +154,34 @@ class RepositoryImpl : Repository {
 
     private fun loadCategoriesOfGenres(
         adult: Boolean,
-        language: String,
+        isRus: Boolean,
         page: Int
     ): MutableList<Category> {
+        val language = if (isRus) languageRU
+        else languageEN
+
         val genresDTO = BackendRepo.api.getGenres(BuildConfig.MOVIE_API_KEY, language)
             .execute()
             .body()
         val categoriesGenres = mutableListOf<Category>()
         genresDTO?.let {
             var id = constCategoryCount
-            for (genreDTO in genresDTO.genres) {
+            for (genreDTO in it.genres) {
                 categoriesGenres.add(
-                    Category(
-                        name = genreDTO?.name ?: "",
-                        movies = toMovies(
-                            loadCategoryGenre(
-                                idGenre = genreDTO?.id ?: 0,
-                                adult = adult,
-                                language = language,
-                                page = page
-                            )
-                        ),
-                        id = id,
-                        page = page
-                    )
+                    toCategory(
+                        loadCategoryGenre(
+                            idGenre = genreDTO?.id ?: 0,
+                            adult = adult,
+                            language = language,
+                            page = page
+                        )
+                    ).apply {
+                        this.name = genreDTO?.name ?: ""
+                        this.movies.map { it.isFavorite = isFavorite(it.id) }
+                        this.id = id
+                        this.isRus = isRus
+                        this.adult = adult
+                    }
                 )
                 id++
             }

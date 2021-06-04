@@ -25,6 +25,7 @@ const val languageRU = "ru-RU"
 const val languageEN = "en-US"
 const val imageLink = "https://image.tmdb.org"
 const val endPointImage = "/t/p/w200"
+const val endPointImageBack = "/t/p/w300"
 const val ImageNotFound = "/kqjL17yufvn9OVLyXYpvtyrFfak.jpg"
 
 const val constCategoryCount = 4

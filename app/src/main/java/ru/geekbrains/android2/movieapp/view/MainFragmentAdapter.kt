@@ -14,15 +14,19 @@ import ru.geekbrains.android2.movieapp.model.Movie
 class MainFragmentAdapter(
     private var onItemViewClickListener: MainFragment.OnItemViewClickListener,
     private var setFavoriteToMovie: MainFragment.SetFavoriteToMovie,
-    private var setSameMovies: MainFragmentCategoryAdapter.SetSameMovies
+    private var setSameMovies: MainFragmentCategoryAdapter.SetSameMovies,
+    private var onNewPage: MainFragment.OnNewPage
 ) :
     RecyclerView.Adapter<MainFragmentAdapter.MainViewHolder>() {
 
     private var category: Category = Category()
+    private var movieList = mutableListOf<Movie>()
 
     fun setMovie(data: Category) {
+        val firstItemPosition = movieList.size
+        movieList.addAll(data.movies)
         category = data
-        notifyDataSetChanged()
+        notifyItemRangeInserted(firstItemPosition, category.movies.size)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MainViewHolder {
@@ -33,11 +37,14 @@ class MainFragmentAdapter(
     }
 
     override fun onBindViewHolder(holder: MainViewHolder, position: Int) {
-        holder.bind(category.movies[position])
+        if (position == movieList.size - 1 && category.page < category.total_pages) {
+            onNewPage.getPage(category.isRus, category.adult, category.page + 1, category.id)
+        }
+        holder.bind(movieList[position])
     }
 
     override fun getItemCount(): Int {
-        return category.movies.size
+        return movieList.size
     }
 
     inner class MainViewHolder(view: View) : RecyclerView.ViewHolder(view) {

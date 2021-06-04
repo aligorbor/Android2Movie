@@ -11,14 +11,19 @@ import ru.geekbrains.android2.movieapp.R
 import ru.geekbrains.android2.movieapp.model.Person
 import ru.geekbrains.android2.movieapp.model.Persons
 
-class PeoplesFragmentAdapter(private var onItemViewClickListener: PeoplesFragment.OnItemViewClickListener) :
-    RecyclerView.Adapter<PeoplesFragmentAdapter.MainViewHolder>() {
+class PeoplesFragmentAdapter(
+    private var onItemViewClickListener: PeoplesFragment.OnItemViewClickListener,
+    private var onNewPage: PeoplesFragment.OnNewPage
+) : RecyclerView.Adapter<PeoplesFragmentAdapter.MainViewHolder>() {
 
     private var persons: Persons = Persons()
+    private var personList = mutableListOf<Person>()
 
     fun setPeople(data: Persons) {
+        val firstItemPosition = personList.size
+        personList.addAll(data.persons)
         persons = data
-        notifyDataSetChanged()
+        notifyItemRangeInserted(firstItemPosition, persons.persons.size)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MainViewHolder {
@@ -29,11 +34,14 @@ class PeoplesFragmentAdapter(private var onItemViewClickListener: PeoplesFragmen
     }
 
     override fun onBindViewHolder(holder: MainViewHolder, position: Int) {
-        holder.bind(persons.persons[position])
+        if (position == personList.size - 1 && persons.page < persons.total_pages) {
+            onNewPage.getPage(persons.isRus, persons.adult, persons.page + 1)
+        }
+        holder.bind(personList[position])
     }
 
     override fun getItemCount(): Int {
-        return persons.persons.size
+        return personList.size
     }
 
     inner class MainViewHolder(view: View) : RecyclerView.ViewHolder(view) {

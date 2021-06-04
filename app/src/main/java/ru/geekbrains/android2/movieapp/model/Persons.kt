@@ -9,7 +9,8 @@ data class Persons(
     var persons: MutableList<Person> = mutableListOf(),
     var id: Int = 0,
     var isRus: Boolean = false,
-    var page: Int = 1,
-    var total_pages: Int = 1,
+    var adult: Boolean = false,
+    var page: Int = 0,
+    var total_pages: Int = 0,
     var total_results: Int = 0
 ) : Parcelable

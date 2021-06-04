@@ -12,15 +12,32 @@ import ru.geekbrains.android2.movieapp.model.Movie
 class MainFragmentCategoryAdapter(
     private var onItemViewClickListener: MainFragment.OnItemViewClickListener,
     private var onCategoryClickListener: MainFragment.OnCategoryClickListener,
-    private var setFavoriteToMovie: MainFragment.SetFavoriteToMovie
+    private var setFavoriteToMovie: MainFragment.SetFavoriteToMovie,
+    private var onNewPage: MainFragment.OnNewPage
 ) :
     RecyclerView.Adapter<MainFragmentCategoryAdapter.MainViewHolder>() {
 
     private var catgoryData: List<Category> = listOf()
+    private var adapters = mutableListOf<MainFragmentAdapter>()
 
     fun setCategory(data: List<Category>) {
         catgoryData = data
+        for (category in data) {
+            adapters.add(MainFragmentAdapter(
+                onItemViewClickListener,
+                setFavoriteToMovie,
+                setSameMovies,
+                onNewPage
+            )
+                .also {
+                    it.setMovie(category)
+                })
+        }
         notifyDataSetChanged()
+    }
+
+    fun setCategoryById(data: Category) {
+        adapters[data.id].setMovie(data)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MainViewHolder {
@@ -31,7 +48,7 @@ class MainFragmentCategoryAdapter(
     }
 
     override fun onBindViewHolder(holder: MainViewHolder, position: Int) {
-        holder.bind(catgoryData[position])
+        holder.bind(catgoryData[position], position)
     }
 
     override fun getItemCount(): Int {
@@ -39,7 +56,7 @@ class MainFragmentCategoryAdapter(
     }
 
     inner class MainViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        fun bind(category: Category) {
+        fun bind(category: Category, position: Int) {
             itemView.apply {
                 findViewById<TextView>(R.id.textCategory).apply {
                     text = category.name
@@ -48,10 +65,7 @@ class MainFragmentCategoryAdapter(
                     }
                 }
                 findViewById<RecyclerView>(R.id.mainFragmentRecyclerView).adapter =
-                    MainFragmentAdapter(onItemViewClickListener, setFavoriteToMovie, setSameMovies)
-                        .also {
-                            it.setMovie(category)
-                        }
+                    adapters[position]
             }
         }
     }

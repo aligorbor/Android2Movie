@@ -5,9 +5,12 @@ import kotlinx.parcelize.Parcelize
 
 @Parcelize
 data class Category(
-    val name: String = "",
-    val movies: MutableList<Movie> = mutableListOf(),
-    val id: Int = 0,
+    var name: String = "",
+    var movies: MutableList<Movie> = mutableListOf(),
+    var id: Int = 0,
     var isRus: Boolean = false,
-    var page: Int = 1
+    var adult:Boolean = false,
+    var page: Int = 0,
+    var total_pages: Int = 0,
+    var total_results: Int = 0
 ) : Parcelable

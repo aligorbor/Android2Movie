@@ -1,8 +1,6 @@
 package ru.geekbrains.android2.movieapp.model
 
-import ru.geekbrains.android2.movieapp.model.rest.ImageNotFound
-import ru.geekbrains.android2.movieapp.model.rest.endPointImage
-import ru.geekbrains.android2.movieapp.model.rest.imageLink
+import ru.geekbrains.android2.movieapp.model.rest.*
 import ru.geekbrains.android2.movieapp.model.rest.rest_entities.*
 
 fun toMovies(categoryDTO: CategoryDTO?): MutableList<Movie> {
@@ -31,6 +29,38 @@ fun toMovies(categoryDTO: CategoryDTO?): MutableList<Movie> {
     return movies
 }
 
+fun toCategory(categoryDTO: CategoryDTO?): Category {
+    val movies: MutableList<Movie> = mutableListOf()
+    categoryDTO?.let {
+        for (result in categoryDTO.results) {
+            movies.add(
+                Movie(
+                    adult = result?.adult ?: false,
+                    backdrop_path = "$imageLink$endPointImageBack${result?.backdrop_path ?: ImageNotFound}",
+                    id = result?.id ?: 0,
+                    original_language = result?.original_language ?: "",
+                    original_title = result?.original_title ?: "",
+                    overview = result?.overview ?: "",
+                    popularity = result?.popularity ?: 0.0,
+                    poster_path = "$imageLink$endPointImage${result?.poster_path ?: ImageNotFound}",
+                    release_date = result?.release_date ?: "",
+                    title = result?.title ?: "",
+                    video = result?.video ?: false,
+                    vote_average = result?.vote_average ?: 0.0,
+                    vote_count = result?.vote_count ?: 0
+                )
+            )
+        }
+    }
+    return Category(
+        movies = movies,
+        page = categoryDTO?.page ?: 0,
+        total_pages = categoryDTO?.total_pages ?: 0,
+        total_results = categoryDTO?.total_results ?: 0,
+    )
+}
+
+
 fun toMovieDetail(movie: Movie, movieDetailDTO: MovieDetailDTO?): Movie {
     movie.original_title = movieDetailDTO?.original_title ?: ""
     movie.overview = movieDetailDTO?.overview ?: ""
@@ -48,11 +78,11 @@ fun toMovieDetail(movie: Movie, movieDetailDTO: MovieDetailDTO?): Movie {
     return movie
 }
 
-fun toPersons(personsDTO: PersonsDTO?): MutableList<Person> {
-    val persons: MutableList<Person> = mutableListOf()
+fun toPersons(personsDTO: PersonsDTO?): Persons {
+    val personList: MutableList<Person> = mutableListOf()
     personsDTO?.let {
         for (result in personsDTO.results) {
-            persons.add(
+            personList.add(
                 Person(
                     adult = result?.adult ?: false,
                     gender = result?.gender ?: 0,
@@ -66,7 +96,14 @@ fun toPersons(personsDTO: PersonsDTO?): MutableList<Person> {
             )
         }
     }
-    return persons
+    return Persons(
+        name = personPopular,
+        persons = personList,
+        id = 0,
+        page = personsDTO?.page ?: 0,
+        total_pages = personsDTO?.total_pages ?: 0,
+        total_results = personsDTO?.total_results ?: 0,
+    )
 }
 
 fun toPersonDetail(person: Person, personDetailDTO: PersonDetailDTO?): Person {
